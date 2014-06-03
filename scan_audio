@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+searchfile = open("audio.txt","r")
+storage = ""
+for line in searchfile:
+ if "data: " in line : 
+  storage = storage + line
+searchfile.close()
+
+outlink = ""
+for i in storage :
+ for j in i :
+  if j == "1" or j == "2" or j == "3" or j == "4" or j == "5" or j == "6" or j == "7" or j == "8" or j == "9" or j == "0":
+   outlink = outlink + j
+  elif j == "," or j == "]" :
+   outlink = outlink + "\n"
+
+printfile = open("aout.txt","w")
+for i in outlink :
+ printfile.write(i)
+printfile.close
+
+# I'm not entirely sure that this is quite what we need. I get the feeling that the grouping of these values might mean something, 
+# but until we know for sure, we have this simpler version.
