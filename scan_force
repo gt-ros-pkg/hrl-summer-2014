@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-searchfile = open("force.txt","r")
+searchfile = open("force","r")
 
 storage = ""
 for line in searchfile:
@@ -65,32 +65,32 @@ for i in storage :
     r6 = r6 + '\n'
     check6 = 0
 
-printfile = open("r1.txt","w")
+printfile = open("r1","w")
 for i in r1 :
  printfile.write(i)
 printfile.close
 
-printfile = open("r2.txt","w")
+printfile = open("r2","w")
 for i in r2 :
  printfile.write(i)
 printfile.close
 
-printfile = open("r3.txt","w")
+printfile = open("r3","w")
 for i in r3 :
  printfile.write(i)
 printfile.close
 
-printfile = open("r4.txt","w")
+printfile = open("r4","w")
 for i in r4 :
  printfile.write(i)
 printfile.close
 
-printfile = open("r5.txt","w")
+printfile = open("r5","w")
 for i in r5 :
  printfile.write(i)
 printfile.close
 
-printfile = open("r6.txt","w")
+printfile = open("r6","w")
 for i in r6 :
  printfile.write(i)
 printfile.close
