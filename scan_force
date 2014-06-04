@@ -68,32 +68,32 @@ for i in storage :
     r6 = r6 + '\n'
     check6 = 0
 
-printfile = open("r1","w")
+printfile = open("force1","w")
 for i in r1 :
  printfile.write(i)
 printfile.close
 
-printfile = open("r2","w")
+printfile = open("force2","w")
 for i in r2 :
  printfile.write(i)
 printfile.close
 
-printfile = open("r3","w")
+printfile = open("force3","w")
 for i in r3 :
  printfile.write(i)
 printfile.close
 
-printfile = open("r4","w")
+printfile = open("torque1","w")
 for i in r4 :
  printfile.write(i)
 printfile.close
 
-printfile = open("r5","w")
+printfile = open("torque2","w")
 for i in r5 :
  printfile.write(i)
 printfile.close
 
-printfile = open("r6","w")
+printfile = open("torque3","w")
 for i in r6 :
  printfile.write(i)
 printfile.close
