@@ -2,9 +2,12 @@
 searchfile = open("force","r")
 
 storage = ""
+beta = ""
 for line in searchfile:
  if "data: " in line : 
   storage = storage + line
+ if "seq: " in line or "secs: " in line or "nsecs: " in line:
+  beta = beta + line
 searchfile.close()
 
 r1 = ""
@@ -92,5 +95,10 @@ printfile.close
 
 printfile = open("r6","w")
 for i in r6 :
+ printfile.write(i)
+printfile.close
+
+printfile = open("Force_Timing","w")
+for i in beta :
  printfile.write(i)
 printfile.close
