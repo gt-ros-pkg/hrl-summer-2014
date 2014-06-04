@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-searchfile = open("audio.txt","r")
+searchfile = open("audio","r")
 storage = ""
 for line in searchfile:
  if "data: " in line : 
@@ -14,7 +14,7 @@ for i in storage :
   elif j == "," or j == "]" :
    outlink = outlink + "\n"
 
-printfile = open("aout.txt","w")
+printfile = open("aout","w")
 for i in outlink :
  printfile.write(i)
 printfile.close
