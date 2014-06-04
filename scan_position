@@ -8,6 +8,7 @@ rx = ""
 ry = ""
 rz = ""
 rw = ""
+beta = ""
 ttype = 0
 rtype = 0
 for line in searchfile:
@@ -34,6 +35,8 @@ for line in searchfile:
    rz = rz + line
  if "w: " in line :
    rw = rw + line
+ if "seq: " in line or "secs: " in line or "nsecs: " in line:
+  beta = beta + line
 searchfile.close()
 
 printfile = open("rx","w")
@@ -83,4 +86,9 @@ for i in tz :
  for j in i : 
   if j != "z" and j != ":" and j != " " :
    printfile.write(i)
+printfile.close
+
+printfile = open("Position_Timing","w")
+for i in beta :
+ printfile.write(i)
 printfile.close
