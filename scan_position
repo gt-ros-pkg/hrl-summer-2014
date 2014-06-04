@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-searchfile = open("position.txt","r")
+searchfile = open("position","r")
 
 tx = ""
 ty = ""
@@ -36,49 +36,49 @@ for line in searchfile:
    rw = rw + line
 searchfile.close()
 
-printfile = open("rx.txt","w")
+printfile = open("rx","w")
 for i in rx :
  for j in i : 
   if j != "x" and j != ":" and j != " " :
    printfile.write(i)
 printfile.close
 
-printfile = open("ry.txt","w")
+printfile = open("ry","w")
 for i in ry :
  for j in i : 
   if j != "y" and j != ":" and j != " " :
    printfile.write(i)
 printfile.close
 
-printfile = open("rz.txt","w")
+printfile = open("rz","w")
 for i in rz :
  for j in i : 
   if j != "z" and j != ":" and j != " " :
    printfile.write(i)
 printfile.close
 
-printfile = open("rw.txt","w")
+printfile = open("rw","w")
 for i in rw :
  for j in i : 
   if j != "w" and j != ":" and j != " " :
    printfile.write(i)
 printfile.close
 
-printfile = open("tx.txt","w")
+printfile = open("tx","w")
 for i in tx :
  for j in i : 
   if j != "x" and j != ":" and j != " " :
    printfile.write(i)
 printfile.close
 
-printfile = open("ty.txt","w")
+printfile = open("ty","w")
 for i in ty :
  for j in i : 
   if j != "y" and j != ":" and j != " " :
     printfile.write(i)
 printfile.close
 
-printfile = open("tz.txt","w")
+printfile = open("tz","w")
 for i in tz :
  for j in i : 
   if j != "z" and j != ":" and j != " " :
