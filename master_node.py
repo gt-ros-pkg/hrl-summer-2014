@@ -32,10 +32,16 @@ def spotcheck():
 	     break
 	if pit == -1:
 	  print "timeout error occured"
-	  return -1
+          return -1
         rec = rospy.ServiceProxy('compare_histo', CompareHisto)
         ret = rec(0)
         print "%d"%ret.R
+        if ret.R == 1:
+            print "No major change"
+        elif ret.R == 0 :
+            print "Changes occured"
+        else :
+            print "Image Loaded"
     except rospy.ServiceException, e:
         print "Service call failed: %s"%e
 
