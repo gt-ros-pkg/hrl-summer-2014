@@ -17,9 +17,9 @@ import roslib; roslib.load_manifest('snapshot')
 from snapshot.srv import *
 
 check = 0
-
+## Previous version of rospath was: /wide_stereo/right/image_color/compressed
 class SingleSubscription(object):
-    def snapshot(self, rospath='/wide_stereo/right/image_color/compressed', dest_path='./CoHis/snapshot.jpeg'):    
+    def snapshot(self, rospath='/head_mount_kinect/rgb/image_color/compressed', dest_path='./CoHis/snapshot.jpeg'):    
         self.done = False          
         self.path = os.path.abspath(dest_path)       
         self.subscriber = rospy.Subscriber(rospath, CompressedImage, self.callback)
