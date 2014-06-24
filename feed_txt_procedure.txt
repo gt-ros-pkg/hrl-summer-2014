@@ -1,0 +1,11 @@
+0. Launch the robot:
+screen
+roscore
+roslaunch robot.launch
+
+1.1 Servo robot up to wheelchair and table
+1.2 Teleop robot up to wheelchair and table
+tuck
+teleop
+
+
