@@ -14,9 +14,9 @@ if __name__ == '__main__':
     rate = rospy.Rate(10.0)
     while not rospy.is_shutdown():
         Broadcaster.sendTransform((0.2, 0.0, 0.0),(0.0, 0.0, 0.0, 1.0),
-                        rospy.Time.now(),"/FeedPos", "/head_frame")
+                        rospy.Time.now(),"/FeedPos", "/r_gripper_r_finger_link")
         try:
-            (trans,rot) = listener.lookupTransform('/base_link', '/head_frame', rospy.Time(0))
+            (trans,rot) = listener.lookupTransform('/base_link', '/FeedPos', rospy.Time(0))
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             continue
         
