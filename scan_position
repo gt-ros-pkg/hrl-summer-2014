@@ -1,0 +1,94 @@
+#!/usr/bin/env python
+searchfile = open("position","r")
+
+tx = ""
+ty = ""
+tz = ""
+rx = ""
+ry = ""
+rz = ""
+rw = ""
+beta = ""
+ttype = 0
+rtype = 0
+for line in searchfile:
+ if "translation: " in line : 
+  ttype = 1
+  rtype = 0
+ if "rotation: " in line:
+  rtype = 1
+  ttype = 0
+ if "x: " in line :
+  if ttype == 1 :
+   tx = tx + line
+  else :
+   rx = rx + line
+ if "y: " in line :
+  if ttype == 1 :
+   ty = ty + line
+  else :
+   ry = ry + line
+ if "z: " in line :
+  if ttype == 1 :
+   tz = tz + line
+  else :
+   rz = rz + line
+ if "w: " in line :
+   rw = rw + line
+ if "seq: " in line or "secs: " in line or "nsecs: " in line:
+  beta = beta + line
+searchfile.close()
+
+printfile = open("rx","w")
+for i in rx :
+ for j in i : 
+  if j != "x" and j != ":" and j != " " :
+   printfile.write(i)
+printfile.close
+
+printfile = open("ry","w")
+for i in ry :
+ for j in i : 
+  if j != "y" and j != ":" and j != " " :
+   printfile.write(i)
+printfile.close
+
+printfile = open("rz","w")
+for i in rz :
+ for j in i : 
+  if j != "z" and j != ":" and j != " " :
+   printfile.write(i)
+printfile.close
+
+printfile = open("rw","w")
+for i in rw :
+ for j in i : 
+  if j != "w" and j != ":" and j != " " :
+   printfile.write(i)
+printfile.close
+
+printfile = open("tx","w")
+for i in tx :
+ for j in i : 
+  if j != "x" and j != ":" and j != " " :
+   printfile.write(i)
+printfile.close
+
+printfile = open("ty","w")
+for i in ty :
+ for j in i : 
+  if j != "y" and j != ":" and j != " " :
+    printfile.write(i)
+printfile.close
+
+printfile = open("tz","w")
+for i in tz :
+ for j in i : 
+  if j != "z" and j != ":" and j != " " :
+   printfile.write(i)
+printfile.close
+
+printfile = open("Position_Timing","w")
+for i in beta :
+ printfile.write(i)
+printfile.close
