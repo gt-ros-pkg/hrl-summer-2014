@@ -1,6 +1,6 @@
 #!/usr/bin/env python  
 import roslib
-roslib.load_manifest('feed_yogurt')
+roslib.load_manifest('RobotCode')
 import rospy
 import math
 import tf
