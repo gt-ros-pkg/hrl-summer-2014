@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
-# Version 3 - CL - Laws of this World
-# To DO:
-# Test (obviously)
-# In order to do above, I'll need test data and a script of the right size.
-# Please Note: This version is designed for Force_Torque (modify for other modalities)
-# everything else seems to be working at least for the most part(haven't made 
-# it past the get current position call
+# k-nn.py -> k Next Neighbors implimentation
+# Caleb Little, HRL Summer 2014
+# Please read all relavent information below before using 
+
+# Version 3 : The Laws of this World
+# Changes: 
+# Autoadjusted distances for anomoly detection based on 
+# data spread. Sensitivity can be adjusted below.
+# Currently, an error requires an error of 5 times
+# that of a warning.
 
 import rospy
 import os.path
@@ -19,8 +22,13 @@ from std_msgs.msg import Float64
 import roslib; roslib.load_manifest('manifold_systems')
 from manifold_systems.srv import *
 
+# Sensitivity Control Section:
+tol = 1 # 1 is normal operation. 
+# Increasing the value of tol will cause the acceptable 
+# distance between nodes to increase
+
+
 class k_nn:
-    
     def load_points(self):
         f = open('Original_Points','r')
         self.base = load(f)
@@ -101,8 +109,8 @@ class k_nn:
         else:
          scale = y_max-y_min
         #print "Calculated scale is: ", scale
-        tier1_issue = scale/20
-        tier2_issue = scale/4
+        tier1_issue = scale/20*tol
+        tier2_issue = scale/4*tol
         #print "tiers are: "
         #print "tier1 = ", tier1_issue
         #print "tier2 = ", tier2_issue
