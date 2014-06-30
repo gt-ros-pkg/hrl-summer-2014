@@ -1,24 +1,36 @@
 # dr.py -> dimesion reduction system
 # Caleb Little, HRL Summer 2014
-# drmap = data map
+# Please read all relavent information below before using
+# Please note: In order to utilize MiniSom properly, you will need a 
+# modified and recompiled MiniSom file. The modifcations can be
+# obtained from me.
+
+# Version 2: Doctor, Doctor, and Fun
+# Changes:
+# Updated system to impliment 4 algorithms: SOM, LLE, PCA, and Isomap
+
 import numpy as np
-from minisom import MiniSom
+from minisom import MiniSom 
 from sklearn import manifold, datasets, decomposition, ensemble, lda, random_projection
 import pylab as pl
 import cPickle as pickle
 
-window_control = 0.7 # Don't touch this unless you know what it does
+# Controls Section:
+window_control = 0.7 #Controls scaling for graphing
+mode = 2 #Selects Dimension Reduction:1 = SOM, 2 = LLE, 3 = PCA, 4 = Isomap
+fresh_data = 1 #Allows for storage: 1 = recalculate, 0 = load old data
+#
 
-mode = 4 #1 = SOM, 2 = LLE, 3 = PCA, 4 = Isomap
-fresh_data = 1 # 1 = yes, 0 = load old data
-
-# get data (uses sklearn atm)
+# Data Setup section:
+# (currently utilizes scikit learn datasets)
 digits = datasets.load_digits(n_class=4)
 data = digits.data # matrix where each row is a vector that represent a digit.
 num = digits.target # num[i] is the digit represented by data[i]
 n_samples, n_features = data.shape
 n_neighbors = 30
+#
 
+# Functional Code Below:
 if mode == 1:
     print "Using SOM"
     drmap = MiniSom(20,20,64,sigma=.8,learning_rate=0.5) # Replace 64 with the dimensions of desired target
@@ -28,7 +40,7 @@ if mode == 1:
         print "\n...ready!"
     elif fresh_data == 0:
         print "Loading Data"
-        drmap.load_map() # Use this to load a previously existing map
+        drmap.load_map()
 
     # plotting the results
     from pylab import text,show,cm,axis,figure,subplot,imshow,zeros
@@ -111,18 +123,13 @@ else:
      result[im][2]=num[im]
      text(w[0][0]+.5, w[0][1]+.5, str(t), color=cm.Dark2(t / 4.), fontdict={'weight': 'bold', 'size': 11})
      im = im + 1
-    print result
     x_min = np.amin(result[:,0])
     x_max = np.amax(result[:,0])
     y_min = np.amin(result[:,1])
     y_max = np.amax(result[:,1])
-    print x_min
-    print x_max
-    print y_min
-    print y_max
     if mode != 2:
         axis([x_min,x_max,y_min,y_max])
-    else :
+    else:
         axis([0,x_max+window_control,0,y_max+window_control])
 
 show()
