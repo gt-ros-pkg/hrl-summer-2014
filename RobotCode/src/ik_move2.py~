@@ -55,12 +55,8 @@ class IKGoalSender(object):
                                                 '_arm_controller/state',
                                                 JointTrajectoryControllerState,
                                                 self.joint_state_cb)
-        #Need to come up with a better way of doing this, should have FeedPos
-        try:
-            self.hold = listener.lookupTransform('/base_link', '/FeedPos', rospy.Time(0))
-            self.pose_sub = rospy.Subscriber(self.hold, PoseStamped, self.pose_cb)
-        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-            rospy.loginfo("Could not get hold")
+        
+        self.pose_sub = rospy.Subscriber('pose_in', PoseStamped, self.pose_cb)
 
 
     def joint_state_cb(self, js_msg):
@@ -72,7 +68,6 @@ class IKGoalSender(object):
 
     def pose_cb(self, ps):
         """ Perform IK for a goal pose, and send action goal if acheivable"""
-        rospy.loginfo('made it to pose_cb')
         if not self.joint_state_received:
             rospy.loginfo('[IKGoalSender] No Joint State Received')
             return
@@ -90,7 +85,7 @@ class IKGoalSender(object):
 
            traj_goal = JointTrajectoryGoal()
            traj_goal.trajectory = traj
-           #self.traj_client.send_goal(traj_goal)
+           self.traj_client.send_goal(traj_goal)
         else:
             rospy.loginfo('[IKGoalSender] IK Failed: Cannot reach goal')
             self.log_pub.publish(String('IK Failed: Cannot reach goal'))

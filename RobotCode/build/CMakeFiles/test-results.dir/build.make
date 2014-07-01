@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/dave/git/feed_yogurt
+CMAKE_SOURCE_DIR = /home/dave/git/hrl-summer-2014/RobotCode
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/dave/git/feed_yogurt/build
+CMAKE_BINARY_DIR = /home/dave/git/hrl-summer-2014/RobotCode/build
 
 # Utility rule file for test-results.
 
@@ -43,7 +43,7 @@ CMAKE_BINARY_DIR = /home/dave/git/feed_yogurt/build
 include CMakeFiles/test-results.dir/progress.make
 
 CMakeFiles/test-results:
-	/opt/ros/fuerte/share/rosunit/bin/summarize_results.py --nodeps feed_yogurt
+	/opt/ros/fuerte/share/rosunit/bin/summarize_results.py --nodeps RobotCode
 
 test-results: CMakeFiles/test-results
 test-results: CMakeFiles/test-results.dir/build.make
@@ -58,6 +58,6 @@ CMakeFiles/test-results.dir/clean:
 .PHONY : CMakeFiles/test-results.dir/clean
 
 CMakeFiles/test-results.dir/depend:
-	cd /home/dave/git/feed_yogurt/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/dave/git/feed_yogurt /home/dave/git/feed_yogurt /home/dave/git/feed_yogurt/build /home/dave/git/feed_yogurt/build /home/dave/git/feed_yogurt/build/CMakeFiles/test-results.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/dave/git/hrl-summer-2014/RobotCode/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/dave/git/hrl-summer-2014/RobotCode /home/dave/git/hrl-summer-2014/RobotCode /home/dave/git/hrl-summer-2014/RobotCode/build /home/dave/git/hrl-summer-2014/RobotCode/build /home/dave/git/hrl-summer-2014/RobotCode/build/CMakeFiles/test-results.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/test-results.dir/depend
 

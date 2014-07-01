@@ -55,7 +55,7 @@ class IKGoalSender(object):
                                                 '_arm_controller/state',
                                                 JointTrajectoryControllerState,
                                                 self.joint_state_cb)
-
+        
         self.pose_sub = rospy.Subscriber('pose_in', PoseStamped, self.pose_cb)
 
 
@@ -68,7 +68,6 @@ class IKGoalSender(object):
 
     def pose_cb(self, ps):
         """ Perform IK for a goal pose, and send action goal if acheivable"""
-        rospy.loginfo('made it to pose_cb')
         if not self.joint_state_received:
             rospy.loginfo('[IKGoalSender] No Joint State Received')
             return
@@ -86,7 +85,7 @@ class IKGoalSender(object):
 
            traj_goal = JointTrajectoryGoal()
            traj_goal.trajectory = traj
-           #self.traj_client.send_goal(traj_goal)
+           self.traj_client.send_goal(traj_goal)
         else:
             rospy.loginfo('[IKGoalSender] IK Failed: Cannot reach goal')
             self.log_pub.publish(String('IK Failed: Cannot reach goal'))
