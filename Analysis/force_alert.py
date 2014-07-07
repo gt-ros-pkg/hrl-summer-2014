@@ -34,12 +34,9 @@ if __name__=='__main__':
 force_x=deque([])
 force_y=deque([])
 force_z=deque([])
-torque_x=deque([])
-torque_y=deque([])
-torque_z=deque([])
 
 fmag=deque([])
-tmag=deque([])
+
 
 
 try:
@@ -48,21 +45,16 @@ try:
         force_x.append(data.wrench.force.x)
         force_y.append(data.wrench.force.y)
         force_z.append(data.wrench.force.z)
-        torque_x.append(data.wrench.torque.x)
-        torque_y.append(data.wrench.torque.y)
-        torque_z.append(data.wrench.torque.z)
+     
         
         fx=np.array(force_x)
         fy=np.array(force_y)
         fz=np.array(force_z)
         
-        tx=np.array(torque_x)
-        ty=np.array(torque_y)
-        tz=np.array(torque_z)
- 
+   
         #Calculate magnitude of the newest point and add to magnitude deque 
         fmag.append(math.sqrt(fx[-1]**2+fy[-1]**2+fz[-1]**2))
-        tmag.append(math.sqrt(tx[-1]**2+ty[-1]**2+tz[-1]**2))
+      
                
         #Check magnitude   
         z=(np.array(fmag)-mu)/sigma
