@@ -136,7 +136,6 @@ SET(CMAKE_C_INCLUDE_PATH
   "/home/dave/git/ar_tools/ar_pose/msg_gen/cpp/include"
   "/home/dave/git/ar_tools/artoolkit/include"
   "/home/dave/git/ar_tools/artoolkit/include/AR/sys"
-  "../msg_gen/cpp/include"
   "../srv_gen/cpp/include"
   )
 SET(CMAKE_CXX_INCLUDE_PATH ${CMAKE_C_INCLUDE_PATH})

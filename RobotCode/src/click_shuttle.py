@@ -2,9 +2,10 @@
 
 import copy
 
-import roslib; roslib.load_manifest('hrl_head_registration')
+import roslib; roslib.load_manifest('hrl_head_registration'); roslib.load_manifest('RobotCode')
 import rospy
 import rosbag
+from RobotCode.srv import *
 from std_msgs.msg import String
 from geometry_msgs.msg import PointStamped
 from hrl_head_registration.srv import HeadRegistration, ConfirmRegistration
@@ -35,3 +36,4 @@ def r_react(point_msgs):
 if __name__ == "__main__":
     rospy.init_node('click_shuttle')
     primary()
+    rospy.spin()

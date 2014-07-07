@@ -1,4 +1,7 @@
 FILE(REMOVE_RECURSE
+  "../srv_gen"
+  "../src/RobotCode/srv"
+  "../srv_gen"
   "CMakeFiles/tests"
 )
 

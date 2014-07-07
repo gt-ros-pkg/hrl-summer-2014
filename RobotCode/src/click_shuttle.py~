@@ -2,15 +2,16 @@
 
 import copy
 
-import roslib; roslib.load_manifest('hrl_head_registration')
+import roslib; roslib.load_manifest('hrl_head_registration'); roslib.load_manifest('RobotCode')
 import rospy
 import rosbag
+from RobotCode.srv import *
 from std_msgs.msg import String
 from geometry_msgs.msg import PointStamped
 from hrl_head_registration.srv import HeadRegistration, ConfirmRegistration
 
 
-def primary():
+def primary(x):
     rospy.Subscriber("/clickable_display/l_mouse_click",PointStamped,l_react)
     rospy.Subscriber("/clickable_display/r_mouse_click",PointStamped,r_react)
     
@@ -27,11 +28,12 @@ def l_react(point_msgs):
 def r_react(point_msgs):
     print "r_react"
     rospy.wait_for_service("confirm_registration")
-    click_r = rospy.ServiceProxy("confirm_registration",ConfirmRegistion)
+    click_r = rospy.ServiceProxy("confirm_registration",ConfirmRegistration)
     trash = click_r()
     
 
 
 if __name__ == "__main__":
     rospy.init_node('click_shuttle')
-    primary()
+    s = rospy.Service('clk_shuttle_srv', handler, primary)
+    rospy.spin()

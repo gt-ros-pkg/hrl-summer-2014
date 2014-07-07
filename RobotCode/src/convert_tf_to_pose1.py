@@ -21,11 +21,11 @@ if __name__ == '__main__':
 #translational note: (red,green,blue)
 #Quaternian note: (red,green,blue,?)
     while not rospy.is_shutdown():
-        Broadcaster.sendTransform((0.6, -0.1, -0.1),(3, 14, 20, -1),
+        Broadcaster.sendTransform((0.6, -0.1, -0.1),(3, 14, 13, -1),
                         rospy.Time.now(),"/FeedPos", "/head_frame")
-        #Broadcaster.sendTransform((0.49, -0.0, -0.1),(3, 14, 20, -1),
+        #Broadcaster.sendTransform((0.49, -0.0, -0.1),(3, 14, 13, -1),
         #                rospy.Time.now(),"/FeedPos", "/head_frame")
-        #Broadcaster.sendTransform((0.53, -0.0, -0.08),(3, 14, 20, -1),
+        #Broadcaster.sendTransform((0.53, -0.0, -0.08),(3, 14, 13, -1),
         #                rospy.Time.now(),"/FeedPos", "/head_frame")
         try:
             (trans, rot) = listener.lookupTransform('/torso_lift_link', '/FeedPos', rospy.Time(0))
