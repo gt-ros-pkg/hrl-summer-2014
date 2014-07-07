@@ -14,8 +14,9 @@ import math
 hand='l'		   #which gripper is being tracked
 stop=True 
 mu=9.66			   #mean magnitude of accelteration as calculated from previous trials in Nm
-sigma2=1		   #Standard deviation		
-dist= stats.norm(mu,sigma2) #unit gaussian curve of amplitude of previous tests
+sigma2=1		   #variance		
+sigma=math.sqrt(sigma2)  #standard deviation
+dist= stats.norm(mu,sigma) #unit gaussian curve of amplitude of previous tests
 stddevs=2	           #number of standard deviations above mean to allow as threshhold
 
 
@@ -53,7 +54,7 @@ try:
         
                
         #Check magnitude   
-        z=(np.array(amag)-mu)/sigma2
+        z=(np.array(amag)-mu)/sigma
                    
             
         #Publish message and Report anomalies 
@@ -61,7 +62,7 @@ try:
         def accel_analyzer(stop, z, stddev): 
             rospy.init_node('accel_talker', anonymous=False)
             r=rospy.Rate(10) #in hz
-            a=z>=stddevs*sigma2
+            a=z>=stddevs*sigma
             if a.any():
                 stop=False
                 pub=rospy.Publisher('emergency', String)
@@ -74,7 +75,7 @@ try:
                
             try:
               while stop or not rospy.is_shutdown():
-                  a=z>=stddevs*sigma2
+                  a=z>=stddevs*sigma
                   if a.any():
                       pub=rospy.Publisher('emergency', String)
                       str='STOP'
