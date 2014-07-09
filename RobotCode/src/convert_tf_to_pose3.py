@@ -15,7 +15,7 @@ if __name__ == '__main__':
     listener = tf.TransformListener()
     Broadcaster = tf.TransformBroadcaster()
     i = 0
-    pose_pub = rospy.Publisher('feed_pos', PoseStamped)
+    pose_pub = rospy.Publisher('haptic_mpc/goal_pose', PoseStamped)
 
     rate = rospy.Rate(10.0)
 #translational note: (red,green,blue)

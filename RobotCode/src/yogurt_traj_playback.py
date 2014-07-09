@@ -17,7 +17,7 @@ from hrl_pr2_arms.pr2_arm_joint_traj import create_ep_arm, PR2ArmJointTraj
 from hrl_pr2_arms.pr2_controller_switcher import ControllerSwitcher
 from msg import TrajectoryPlayAction, TrajectoryPlayGoal
 
-globvar = ""
+stop = ""
 RATE = 20
 JOINT_TOLERANCES = [0.03, 0.1, 0.1, 0.1, 0.17, 0.15, 0.12]
 JOINT_VELOCITY_WEIGHT = [3.0, 1.7, 1.7, 1.0, 1.0, 1.0, 0.5]
@@ -27,6 +27,7 @@ PARAM_FILE_LOW = '$(find hrl_pr2_arms)/params/joint_traj_params_electric_low.yam
 CTRL_NAME_NONE = '%s_joint_controller_none'
 CTRL_NAME_DEFAULT = '%s_arm_controller'
 PARAM_FILE_NONE = '$(find hrl_pr2_arms)/params/joint_traj_params_electric_none.yaml'
+PARAM_FILE_DEFAULT = '$(find RobotCode)/params/pr2_arm_controllers_grasp.yaml'
 
 ##
 # Allows one to move the arm through a set of joint angles safely and controller
@@ -81,19 +82,16 @@ class TrajPlayback(object):
             self.is_paused = False
             self.running = True
             rospy.loginfo("[arm_pose_move_controller] Starting trajectory.")
-            rospy.Subscriber('emergency', String, check)
-            stop = globvar
             r = rospy.Rate(rate)
+            global stop
             while (not rospy.is_shutdown() and
                    not self.stop_traj and
                    self.cur_idx < len(joint_trajectory) and
                    stop != "STOP"):
                 self.cur_arm.set_ep(joint_trajectory[self.cur_idx], 1./rate)
                 self.cur_idx += 1
-                rospy.Subscriber('emergency', String, check)
-                stop = globvar
                 r.sleep()
-            print stop
+            #print stop
             self.cur_arm.set_ep(self.cur_arm.get_ep(), 0.3)
             if self.cur_idx < len(joint_trajectory):
                 self.cur_joint_traj = joint_trajectory[self.cur_idx:]
@@ -187,9 +185,12 @@ class TrajPlayback(object):
     def preempt(self):
         self.stop_moving()
 
-def check(data):
-    global globvar 
-    globvar = data.data
+def e_check(data):
+    global stop 
+    stop = data.data
+    if stop == "STOP":
+        traj_ctrl.stop_moving()
+        print "Trajectory stopped"
 
 
     ##
@@ -361,141 +362,153 @@ class TrajectoryServer(object):
     def traj_cancel_cb(self):
         self.traj_ctrl.stop_moving()
 
-def main():
-    while not rospy.is_shutdown():
-        task_set = rospy.Publisher('task_check', String)
-        global globvar
-        globvar = ""
-        from optparse import OptionParser
-        p = OptionParser()
-        p.add_option('-f', '--filename', dest="filename", default="",
-                     help="File to save trajectory to or load from.")
-        p.add_option('-l', '--left_arm', dest="left_arm",
-                     action="store_true", default=False,
-                     help="Use left arm.")
-        p.add_option('-r', '--right_arm', dest="right_arm",
-                     action="store_true", default=False,
-                     help="Use right arm.")
-        p.add_option('-s', '--save_mode', dest="save_mode",
-                     action="store_true", default=False,
-                     help="Saving mode.")
-        p.add_option('-t', '--traj_mode', dest="traj_mode",
-                     action="store_true", default=False,
-                     help="Trajectory mode.")
-        p.add_option('-c', '--ctrl_name', dest="ctrl_name", default=CTRL_NAME_LOW,
-                     help="Controller to run the playback with.")
-        p.add_option('-p', '--params', dest="param_file", default=None, #PARAM_FILE_LOW,
-                     help="YAML file to save parameters in or load from.")
-        p.add_option('-v', '--srv_mode', dest="srv_mode", 
-                     action="store_true", default=False,
-                     help="Server mode.")
-        p.add_option('-y', '--playback_mode', dest="playback_mode", 
-                     action="store_true", default=False,
-                     help="Plays back trajectory immediately.")
-        p.add_option('-z', '--reverse', dest="reverse", 
-                     action="store_true", default=False,
-                     help="Plays back trajectory in reverse.")
-        (opts, args) = p.parse_args()
+def run(data):
 
-        if opts.right_arm:
-            arm_char = 'r'
-        elif opts.left_arm:
-            arm_char = 'l'
-        else:
-            print "Selecting default left arm."
-            arm_char = 'l'
-        rospy.init_node("arm_pose_move_controller_%s" % arm_char)
-        while globvar == "" and not rospy.is_shutdown():
-            rospy.Subscriber('Main_Control', String, check)
+    action = data.data
+    print ("Heard: %s, starting." % action)
+    task_set = rospy.Publisher('task_check', String)
+    task_set.publish("no")
 
-        action = globvar
-        if action == "MoveToHome":
-            opts.traj_mode = False
-            opts.playback_mode = True
-            filename = 'move_to_home'
-        elif action == "MoveToYogurt":
-            opts.traj_mode = False
-            opts.playback_mode = True
-            filename = 'move_to_yogurt'
-        elif action == "MoveToInBowl":
-            opts.traj_mode = False
-            opts.playback_mode = True
-            filename = 'move_to_in_bowl'
-        else:
-            filename = opts.filename
-        opts.filename = filename
+    from optparse import OptionParser
+    p = OptionParser()
+    p.add_option('-f', '--filename', dest="filename", default="",
+                 help="File to save trajectory to or load from.")
+    p.add_option('-l', '--left_arm', dest="left_arm",
+                 action="store_true", default=False,
+                 help="Use left arm.")
+    p.add_option('-r', '--right_arm', dest="right_arm",
+                 action="store_true", default=False,
+                 help="Use right arm.")
+    p.add_option('-s', '--save_mode', dest="save_mode",
+                 action="store_true", default=False,
+                 help="Saving mode.")
+    p.add_option('-t', '--traj_mode', dest="traj_mode",
+                 action="store_true", default=False,
+                 help="Trajectory mode.")
+    p.add_option('-c', '--ctrl_name', dest="ctrl_name", default=CTRL_NAME_LOW,
+                 help="Controller to run the playback with.")
+    p.add_option('-p', '--params', dest="param_file", default=PARAM_FILE_LOW, #None,
+                 help="YAML file to save parameters in or load from.")
+    p.add_option('-v', '--srv_mode', dest="srv_mode", 
+                 action="store_true", default=False,
+                 help="Server mode.")
+    p.add_option('-y', '--playback_mode', dest="playback_mode", 
+                 action="store_true", default=False,
+                 help="Plays back trajectory immediately.")
+    p.add_option('-z', '--reverse', dest="reverse", 
+                 action="store_true", default=False,
+                 help="Plays back trajectory in reverse.")
+    (opts, args) = p.parse_args()
+
+    if opts.right_arm:
+        arm_char = 'r'
+    elif opts.left_arm:
+        arm_char = 'l'
+    else:
+        print "Selecting default left arm."
+        arm_char = 'l'
+
+    #rospy.init_node("arm_pose_move_controller_%s" % arm_char)
+
+    trajects_done = False
+    if action == "GoToHome":
+        opts.traj_mode = False
+        opts.playback_mode = True
+        filename = 'GoToHome'
+    elif action == "HomeToBowl":
+        opts.traj_mode = False
+        opts.playback_mode = True
+        filename = 'HomeToBowl'
+    elif action == "ScoopYogurt":
+        opts.traj_mode = False
+        opts.playback_mode = True
+        filename = 'ScoopYogurt'
+    elif action == "MoveToCheck":
+        opts.traj_mode = False
+        opts.playback_mode = True
+        filename = 'MoveToCheck'
+        trajects_done = True
+    elif opts.filename == "":
+        print ("Heard: %s, will keep listening." % action)
+        return
+    opts.filename = filename
 
 
 
-        
-        if opts.save_mode:
-            assert(opts.right_arm + opts.left_arm == 1)
-            if opts.traj_mode:
-                ctrl_switcher = ControllerSwitcher()
-                ctrl_switcher.carefree_switch(arm_char, CTRL_NAME_NONE, PARAM_FILE_NONE, reset=False)
-                traj_saver = TrajectorySaver(RATE, CTRL_NAME_NONE)
-                raw_input("Press enter to start recording")
-                traj_saver.record_trajectory(arm_char, blocking=False)
 
-                import curses
-                def wait_for_key(stdscr):
-                    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_WHITE)
-                    stdscr.addstr(0,0, "Press any key to stop!", curses.color_pair(1) )
-                    stdscr.refresh()
-                    c = 0
-                    while not rospy.is_shutdown() and c == 0:
-                        c = stdscr.getch()
-                curses.wrapper(wait_for_key)
+    if opts.save_mode:
+        assert(opts.right_arm + opts.left_arm == 1)
+        if opts.traj_mode:
+            ctrl_switcher = ControllerSwitcher()
+            ctrl_switcher.carefree_switch(arm_char, CTRL_NAME_NONE, PARAM_FILE_NONE, reset=False)
+            traj_saver = TrajectorySaver(RATE, CTRL_NAME_NONE)
+            raw_input("Press enter to start recording")
+            traj_saver.record_trajectory(arm_char, blocking=False)
 
-                traj_saver.stop_record(roslaunch.substitution_args.resolve_args(opts.filename))
-                ctrl_switcher.carefree_switch(arm_char, opts.ctrl_name, PARAM_FILE_LOW, reset=False)
-                return
-            else:
-                print "FIX"
-                return
-        elif opts.srv_mode:
-            traj_srv = TrajectoryServer(arm_char, "/trajectory_playback_" + arm_char, 
-                                        opts.ctrl_name, opts.param_file)
-            rospy.spin()
+            import curses
+            def wait_for_key(stdscr):
+                curses.init_pair(1, curses.COLOR_RED, curses.COLOR_WHITE)
+                stdscr.addstr(0,0, "Press any key to stop!", curses.color_pair(1) )
+                stdscr.refresh()
+                c = 0
+                while not rospy.is_shutdown() and c == 0:
+                    c = stdscr.getch()
+            curses.wrapper(wait_for_key)
+
+            traj_saver.stop_record(roslaunch.substitution_args.resolve_args(opts.filename))
+            ctrl_switcher.carefree_switch(arm_char, opts.ctrl_name, PARAM_FILE_LOW, reset=False)
             return
-        elif opts.playback_mode:
-            raw_input("Press enter to continue")
-            print ("starting to perform traj action for: " + action)
-            if opts.traj_mode:
-                exec_traj_from_file(opts.filename,
+        else:
+            print "FIX"
+            return
+    elif opts.srv_mode:
+        traj_srv = TrajectoryServer(arm_char, "/trajectory_playback_" + arm_char, 
+                                    opts.ctrl_name, opts.param_file)
+        rospy.spin()
+        return
+    elif opts.playback_mode:
+        #raw_input("Press enter to begin playback")
+        print ("starting to perform traj action for: " + action)
+        if opts.traj_mode:
+            exec_traj_from_file(opts.filename,
+                                ctrl_name=opts.ctrl_name,
+                                param_file=opts.param_file,
+                                reverse=opts.reverse,
+                                blocking=True)
+        else:
+            print "Beginning moving to trajectory start"
+            move_to_setup_from_file(opts.filename,
                                     ctrl_name=opts.ctrl_name,
                                     param_file=opts.param_file,
                                     reverse=opts.reverse,
                                     blocking=True)
-                task_set = rospy.Publisher('task_check', String)
-                task_set.publish("yes")
-                print "finished trajectory and published yes(1)"
-            else:
-                print "Beginning moving to trajectory start"
-                move_to_setup_from_file(opts.filename,
-                                        ctrl_name=opts.ctrl_name,
-                                        param_file=opts.param_file,
-                                        reverse=opts.reverse,
-                                        blocking=True)
-                print "finished moving to trajectory start"
-                print "Beginning trajectory"
-                exec_traj_from_file(opts.filename,
-                                    ctrl_name=opts.ctrl_name,
-                                    param_file=opts.param_file,
-                                    reverse=opts.reverse,
-                                    blocking=True)
-                task_set = rospy.Publisher('task_check', String)
-                task_set.publish("yes")
-                print "finished trajectory and published yes(2)"
-                time.sleep(2)
-            opts.playback_mode = False
-            globvar = ""
-            action = ""
-        w = rospy.Rate(1)
-        w.sleep()
-    
+            print "Finished moving to trajectory start"
+
+            print "Beginning trajectory"
+            exec_traj_from_file(opts.filename,
+                                ctrl_name=opts.ctrl_name,
+                                param_file=opts.param_file,
+                                reverse=opts.reverse,
+                                blocking=True)
+            print "Done with playback"
+
+            task_set = rospy.Publisher('task_check', String)
+            task_return = action + "Done"
+            task_set.publish(task_return)
+            print "finished trajectory: ", task_return
+
+###This controller transition could probably use some more work
+            if trajects_done == True:
+                ctrl_switcher = ControllerSwitcher()
+                ctrl_switcher.carefree_switch(arm_char, CTRL_NAME_DEFAULT, None, reset=False)
+                print "Controller returned to default"
+
+
 if __name__ == "__main__":
-    main()
+    rospy.init_node("arm_pose_move_controller_l")
+    rospy.Subscriber('emergency', String, e_check)
+    rospy.Subscriber('Main_Control', String, run)
+    rospy.spin()
        
 
 
