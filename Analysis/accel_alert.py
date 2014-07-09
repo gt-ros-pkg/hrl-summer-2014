@@ -16,7 +16,7 @@ stop=True
 mu=9.66			   #mean magnitude of accelteration as calculated from previous trials in Nm
 sigma2=1		   #variance		
 sigma=math.sqrt(sigma2)  #standard deviation
-dist= stats.norm(mu,sigma) #unit gaussian curve of amplitude of previous tests
+dist= stats.norm(mu,sigma2) #unit gaussian curve of amplitude of previous tests
 stddevs=2	           #number of standard deviations above mean to allow as threshhold
 
 
@@ -59,7 +59,7 @@ try:
             
         #Publish message and Report anomalies 
     	    
-        def accel_analyzer(stop, z, stddev): 
+        def accel_analyzer(stop, z, stddevs): 
             rospy.init_node('accel_talker', anonymous=False)
             r=rospy.Rate(10) #in hz
             a=z>=stddevs*sigma
@@ -81,7 +81,7 @@ try:
                       str='STOP'
                   if not a.any():
                       pub=rospy.Publisher('Accel_magnitude', String)
-                      str="%s"%rospy.get_time()+'\n'+ sx + sy +sH 
+                      str=str(amag) 
                         
                   pub.publish(str)
                   rospy.sleep(0.1)
@@ -90,7 +90,7 @@ try:
 
         if __name__=='__main__':
             try:
-               accel_analyzer(stop, z, stddev)
+               accel_analyzer(stop, z, stddevs)
             except rospy.ROSInterruptException: pass
                
 
