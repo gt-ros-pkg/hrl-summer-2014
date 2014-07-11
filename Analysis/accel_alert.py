@@ -24,7 +24,8 @@ import math
 
 hand='l'                   #which gripper is being tracked
 mu=9.66                   #mean magnitude of force as calculated from previous trials in Newtons
-sigma=1
+sigma2=0.15
+sigma=math.sqrt(sigma2)
 dist= stats.norm(mu,sigma) #unit gaussian curve of amplitude of previous tests
 stddev=2	           #number of standard deviations above mean to allow as threshhold
 
