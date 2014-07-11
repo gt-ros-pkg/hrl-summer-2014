@@ -1,4 +1,11 @@
 #! /usr/bin/env python
+#
+#     This node will collect the force messages from the force-torque sensor at the gripper the PR2,
+#     calculate the magnitude of the force, and--using a statistical model based on previous trials
+#     of the PR2 performing this task--publish an alert message to the 'emergency' topic if the magnitude
+#     of force is two standard deviations above the mean. Otherwise, it will publish the magnitude
+#     of the force.
+#
 
 from __future__ import division
 import numpy as np
