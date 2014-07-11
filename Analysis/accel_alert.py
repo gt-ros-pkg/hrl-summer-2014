@@ -1,4 +1,13 @@
 #! /usr/bin/env python
+#
+#    This node will collect the AccelerometerState messages from the accelerometer of the PR2,
+#    calculate the magnitude of acceleration, and--using a statistical model based on previous trials
+#    of the PR2 performing this task--publish an alert message to the 'emergency' topic if the magnitude 
+#    of acceleration is two standard deviations above the mean. Otherwise, it will publish the magnitude
+#    of the acceleration.
+#
+#
+
 from __future__ import division
 import roslib; roslib.load_manifest('pr2_msgs')
 import numpy as np
