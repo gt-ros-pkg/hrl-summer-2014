@@ -1,10 +1,12 @@
 <launch>
 
-  <arg name="arm" default="l" />
+  <arg name="arm" default="l"/>
   <arg name="verbose" default="" />
 
-  <rosparam command="load" file="$(find hrl_haptic_mpc)/mpc_params_pr2.yaml" />
-  <rosparam command="load" file="$(find hrl_haptic_mpc)/pr2_config_params.yaml" />
+  <arg name="robot_config" default="$(find hrl_haptic_mpc)/pr2_config_params.yaml" />
+
+  <rosparam command="load" file="$(find RobotCode)/params/mpc_params_pr2_yogurt.yaml" />
+  <rosparam command="load" file="$(arg robot_config)" />
 
   <node name="mpc_teleop" pkg="hrl_haptic_mpc" type="mpc_teleop_rviz.py" args="-r pr2 -a $(arg arm) --orientation" output="screen"/>
   <node pkg="pr2_arm_kinematics" type="pr2_arm_kinematics_node" name="pr2_left_arm_kinematics" output="screen">

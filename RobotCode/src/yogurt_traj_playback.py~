@@ -12,17 +12,20 @@ from std_msgs.msg import String
 from std_srvs.srv import Empty, EmptyResponse
 import roslaunch.substitution_args
 import actionlib
-
+import sys
 from hrl_pr2_arms.pr2_arm_joint_traj import create_ep_arm, PR2ArmJointTraj
 from hrl_pr2_arms.pr2_controller_switcher import ControllerSwitcher
 from msg import TrajectoryPlayAction, TrajectoryPlayGoal
 
+running = False
 stop = ""
-RATE = 20
-JOINT_TOLERANCES = [0.03, 0.1, 0.1, 0.1, 0.17, 0.15, 0.12]
+RATE = 40
+#JOINT_TOLERANCES = [0.03, 0.1, 0.1, 0.1, 0.17, 0.15, 0.12] #original
+JOINT_TOLERANCES = [0.003, 0.01, 0.01, 0.01, 0.017, 0.015, 0.012] #testing
 JOINT_VELOCITY_WEIGHT = [3.0, 1.7, 1.7, 1.0, 1.0, 1.0, 0.5]
 
-CTRL_NAME_LOW = '%s_joint_controller_low'
+#CTRL_NAME_LOW = '%s_joint_controller_low'
+CTRL_NAME_LOW = '%s_arm_controller'
 PARAM_FILE_LOW = '$(find hrl_pr2_arms)/params/joint_traj_params_electric_low.yaml'
 CTRL_NAME_NONE = '%s_joint_controller_none'
 CTRL_NAME_DEFAULT = '%s_arm_controller'
@@ -91,7 +94,10 @@ class TrajPlayback(object):
                 self.cur_arm.set_ep(joint_trajectory[self.cur_idx], 1./rate)
                 self.cur_idx += 1
                 r.sleep()
-            #print stop
+            if stop == "STOP":
+                self.stop_moving()
+                self.stop_traj = True
+                return
             self.cur_arm.set_ep(self.cur_arm.get_ep(), 0.3)
             if self.cur_idx < len(joint_trajectory):
                 self.cur_joint_traj = joint_trajectory[self.cur_idx:]
@@ -189,15 +195,14 @@ def e_check(data):
     global stop 
     stop = data.data
     if stop == "STOP":
-        traj_ctrl.stop_moving()
-        print "Trajectory stopped"
+        sys.exit("STOP Recieved. Exiting")
 
 
     ##
     # Takes file from local parameter '~traj_directory' or from current directory
 def load_arm_file(filename):
     try:
-        directory = rospy.get_param("~traj_directory","./trajects/")
+        directory = rospy.get_param("~traj_directory","$(find RobotCode)/trajects/")
         if directory[-1] != '/':
             directory = directory + "/"
         f = file(roslaunch.substitution_args.resolve_args(directory + filename), "r")
@@ -362,8 +367,16 @@ class TrajectoryServer(object):
     def traj_cancel_cb(self):
         self.traj_ctrl.stop_moving()
 
-def run(data):
+def callback(data):
+    global running
+    if running == False:
+        run(data)
+    else:
+        print "trajectory was already running"
 
+def run(data):
+    global running
+    running = True
     action = data.data
     print ("Heard: %s, starting." % action)
     task_set = rospy.Publisher('task_check', String)
@@ -387,7 +400,7 @@ def run(data):
                  help="Trajectory mode.")
     p.add_option('-c', '--ctrl_name', dest="ctrl_name", default=CTRL_NAME_LOW,
                  help="Controller to run the playback with.")
-    p.add_option('-p', '--params', dest="param_file", default=None, #PARAM_FILE_LOW,
+    p.add_option('-p', '--params', dest="param_file", default=PARAM_FILE_LOW, #None,
                  help="YAML file to save parameters in or load from.")
     p.add_option('-v', '--srv_mode', dest="srv_mode", 
                  action="store_true", default=False,
@@ -410,7 +423,6 @@ def run(data):
 
     #rospy.init_node("arm_pose_move_controller_%s" % arm_char)
 
-    trajects_done = False
     if action == "GoToHome":
         opts.traj_mode = False
         opts.playback_mode = True
@@ -427,9 +439,20 @@ def run(data):
         opts.traj_mode = False
         opts.playback_mode = True
         filename = 'MoveToCheck'
-        trajects_done = True
+    elif action == "SwitchControllers":
+        ctrl_switcher = ControllerSwitcher()
+        ctrl_switcher.carefree_switch(arm_char, CTRL_NAME_DEFAULT, None, reset=False)
+        print "Controller returned to default"
+        opts.traj_mode = False
+        opts.playback_mode = False
+        task_set = rospy.Publisher('task_check', String)
+        task_return = action + "Done"
+        task_set.publish(task_return)
+        running = False
+        return
     elif opts.filename == "":
         print ("Heard: %s, will keep listening." % action)
+        running = False
         return
     opts.filename = filename
 
@@ -491,23 +514,21 @@ def run(data):
                                 reverse=opts.reverse,
                                 blocking=True)
             print "Done with playback"
-
+            
             task_set = rospy.Publisher('task_check', String)
             task_return = action + "Done"
             task_set.publish(task_return)
             print "finished trajectory: ", task_return
+    action = ""
+    running = False
+    return
 
-###This controller transition could probably use some more work
-            if trajects_done == True:
-                ctrl_switcher = ControllerSwitcher()
-                ctrl_switcher.carefree_switch(arm_char, CTRL_NAME_DEFAULT, None, reset=False)
-                print "Controller returned to default"
 
 
 if __name__ == "__main__":
     rospy.init_node("arm_pose_move_controller_l")
     rospy.Subscriber('emergency', String, e_check)
-    rospy.Subscriber('Main_Control', String, run)
+    rospy.Subscriber('Main_Control', String, callback)
     rospy.spin()
        
 
