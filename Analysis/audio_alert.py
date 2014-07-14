@@ -32,7 +32,7 @@ class audio_core():
         self.rate1=44100 #sampling rate
         self.secs=5 #number of seconds to establish background noise baseline
         self.stop=True
-        self.mu=0	#mean as calculated from previous trials 
+        self.mu=0	#mean as calculated from previous trials
         self.sigma=140
         self.stddevs=1	#number of standard deviations above mean to allow as a threshhold
         self.pub1=rospy.Publisher('emergency', String)
@@ -46,7 +46,7 @@ class audio_core():
         #print ("*recording background noise")
         #frames_back=deque([])
         #amp_back=deque([])
-        #for i in range(0, int(rate1/chunk*secs)): #Record a couple (5) seconds of background noise 
+        #for i in range(0, int(rate1/chunk*secs)): #Record a couple (5) seconds of background noise
         # data=stream.read(chunk)
         # decoded=np.fromstring(data, 'Float32')
         # decoded2=np.fromstring(data, 'Int16')
@@ -57,37 +57,35 @@ class audio_core():
         #Model of Background Noise
         #mu_back=np.mean(amp_back)
 
-    def audio_analyzer(self, z, data):                
+    def audio_analyzer(self, z):#, data):
         r=rospy.Rate(10) #in hz
         #Check if amplitude is above threshold
-        a=abs(z)>=stddevs*sigma
+        a=abs(z)>=self.stddevs*self.sigma
         b=a.any()
         if b:
             #Continue checking amplitude and publish stop message if anomaly occurs
             self.pub1.publish('STOP')
-            print('help')
-        else:
+        #else:
             #If no anomaly continue publishing power and frequency data
-            self.pub2.publish(data.astype(float))
-
-        while not rospy.is_shutdown():
-            a=abs(z)>=stddevs*sigma
+            #self.pub2.publish(data.astype(float))
+        while not rospy.is_shutdown() and b:
+            a=abs(z)>=self.stddevs*self.sigma
             b=a.any()
 
             if b:
                 #Continue checking amplitude and publish stop message if anomaly occurs
                 self.pub1.publish('STOP')
-                print('work')
-            else:
+		print "the end is upon us"
+            #else:
                 #If no anomaly continue publishing power and frequency data
-                self.pub2.publish(data.astype(float))  
+                #self.pub2.publish(data.astype(float))
 
     def compute(self):
         frames=deque([], 3000)
         amp_frames=deque([], 3000)
         try:
-            while stop:
-                data=stream.read(self.chunk)
+            while self.stop:
+                data=self.stream.read(self.chunk)
                 decoded=np.fromstring(data, 'Float32')
                 decoded2=np.fromstring(data, 'Int16')
                 amp_frames.append(decoded2)
@@ -105,24 +103,24 @@ class audio_core():
                         amp_frames_arr=np.concatenate((amp_frames_arr, s), axis=0)
                     frames_arr.reshape(-1)
                     #DFT Spectrogram
-                    Pxx, freqs, t=mlab.specgram(frames_arr, NFFT=256, Fs=rate1)
+                    #Pxx, freqs, t=mlab.specgram(frames_arr, NFFT=256, Fs=rate1)
                     #Find average power
-                    Pxx_ave=np.mean(Pxx, axis=1)
-                    ind=freqs<=3000
+                    #Pxx_ave=np.mean(Pxx, axis=1)
+                    #ind=freqs<=3000
                     #Look at frequencies that are in expected range
-                    c=Pxx_ave[ind]
-                    d=freqs[ind]
+                    #c=Pxx_ave[ind]
+                    #d=freqs[ind]
                     #Amalgamate into one 1D array, so it can be sent as a ROS message
-                    data1=np.concatenate((c, d))
+                    #data1=np.concatenate((c, d))
                     #Make histogram of frequency vs power spectral density
                     #H, xedges, yedges=np.histogram2d(Pxx_ave, freqs, bins=16, normed=True)
                     #Find Z score with which to check amplitude
-                    z=((amp_frames_arr-mu)/sigma)
-                    #print(z)
-                    #a=abs(z)>=stddevs*sigma
-                    print(a.any())
+                    z=((amp_frames_arr-self.mu)/self.sigma)
+                    
+                    a=abs(z)>=self.stddevs*self.sigma
+                    
                     #Publish ROS messages
-                    self.audio_analyzer(z,data1)           
+                    self.audio_analyzer(z)#,data1)
         except:
             a = 1
 
