@@ -22,7 +22,7 @@ def analyze_image(num):
     print "I've been called - analyze_image"
     img = cv2.imread('./CoHis/expected.jpeg')
     mask = np.zeros(img.shape[:2], np.uint8)
-    mask[325:385,225:335] = 225
+    mask[300:385,200:335] = 225
     hist_norm = cv2.calcHist([img], [0], mask, [256], [0,256])
     current = cv2.imread('./CoHis/snapshot.jpeg')
     hist_current = cv2.calcHist([current],[0],mask,[256],[0,256])
