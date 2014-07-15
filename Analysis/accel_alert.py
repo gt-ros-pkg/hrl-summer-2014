@@ -1,13 +1,4 @@
 #! /usr/bin/env python
-#
-#    This node will collect the AccelerometerState messages from the accelerometer of the PR2,
-#    calculate the magnitude of acceleration, and--using a statistical model based on previous trials
-#    of the PR2 performing this task--publish an alert message to the 'emergency' topic if the magnitude 
-#    of acceleration is two standard deviations above the mean. Otherwise, it will publish the magnitude
-#    of the acceleration.
-#
-#
-
 from __future__ import division
 import roslib; roslib.load_manifest('pr2_msgs')
 import numpy as np
@@ -24,7 +15,7 @@ import math
 
 hand='l'                   #which gripper is being tracked
 mu=9.66                   #mean magnitude of force as calculated from previous trials in Newtons
-sigma2=0.15
+sigma2=1.75
 sigma=math.sqrt(sigma2)
 dist= stats.norm(mu,sigma) #unit gaussian curve of amplitude of previous tests
 stddev=2	           #number of standard deviations above mean to allow as threshhold
@@ -35,17 +26,20 @@ stddev=2	           #number of standard deviations above mean to allow as thresh
 class accel_analysis ():
     def __init__(self):
         rospy.init_node('Accel_listener', anonymous=False)
-        rospy.Subscriber("/accelerometer/%s_gripper_motor"%hand, AccelerometerState, self.callback)
-        self.pub=rospy.Publisher('emergency', String)
-        self.pub2=rospy.Publisher('Accel_magnitude', String)
-        self.r=rospy.Rate(10) #in hz
         self.amag=deque([])
         self.accel_x=deque([])
         self.accel_y=deque([])
         self.accel_z=deque([])
+        self.ignore=False
+        self.pub=rospy.Publisher('emergency', String)
+        self.pub2=rospy.Publisher('Accel_magnitude', String)
+        rospy.Subscriber("/accelerometer/%s_gripper_motor"%hand, AccelerometerState, self.callback)
+        rospy.Subscriber('Main_Control', String, self.listen)
+        
+        self.r=rospy.Rate(10) #in hz
+        
  
     def callback(self, msg):
-        #Collect messages from accelerometer
         x=[] 
         y=[]
         z=[]
@@ -53,12 +47,22 @@ class accel_analysis ():
             x.append(msg.samples[i].x)
             y.append(msg.samples[i].y)
             z.append(msg.samples[i].z)
-        #Average samples together (usually 3 per message) 
+        
         self.accel_x.append(np.average(x))
         self.accel_y.append(np.average(y))
         self.accel_z.append(np.average(z))
         self.worknstuff()
-        
+    
+    def listen(self, msg):
+        self.message=msg.data
+        if "SwitchControllers" in self.message:
+            self.ignore=True
+        elif "FacePos1" in self.message: 
+            self.ignore=False
+        else:
+            self.ignore=False
+                   
+            
     def worknstuff (self):
         #Calculate magnitude of the newest point and add to magnitude deque 
         self.amag.append(math.sqrt(self.accel_x[-1]**2+self.accel_y[-1]**2+self.accel_z[-1]**2))
@@ -69,8 +73,8 @@ class accel_analysis ():
         z=(np.array(self.amag)-mu)/sigma
        
         a=z>=stddev*sigma
-        #Publish alert message if there is an anomaly, otherwise publish magnitude
-        if a.any():   
+        
+        if a.any() and not self.ignore:   
             str1='STOP'                             
             self.pub.publish(str1)
         else:

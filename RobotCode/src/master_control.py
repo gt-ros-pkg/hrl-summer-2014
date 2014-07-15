@@ -92,9 +92,9 @@ def move_to_pic(frame):
 
     g = PointHeadGoal()
     g.target.header.frame_id = frame
-    g.target.point.x = 0.0
-    g.target.point.y = -0.3
-    g.target.point.z = 0.1
+    g.target.point.x = 0.3
+    g.target.point.y = -0.2
+    g.target.point.z = 0
     g.min_duration = rospy.Duration(1.0)
 
     client.send_goal(g)
