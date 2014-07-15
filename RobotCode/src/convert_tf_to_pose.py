@@ -9,6 +9,7 @@ import numpy as np
 import tf
 import std_msgs.msg
 import sys
+import os
 from std_msgs.msg import String
 from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 from hrl_haptic_manipulation_in_clutter_srvs.srv import *
@@ -35,9 +36,8 @@ class transformer():
         if self.stop != "STOP":
             return
         self.haptic('False')
-        self.haptic('Enabled')
         print "Stopped haptic control!"
-        sys.exit("STOP recieved. Exiting")
+        os._exit(0)
         #self.broadcast("Hold")
         #while (not rospy.is_shutdown() and self.stop != "STOP"):
         #    self.send_to_mpc("Hold")

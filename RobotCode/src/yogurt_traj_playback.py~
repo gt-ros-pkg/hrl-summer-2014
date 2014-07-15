@@ -4,7 +4,7 @@ import numpy as np
 import cPickle as pickle
 from threading import Lock
 import copy
-
+import os
 import roslib
 roslib.load_manifest("hrl_pr2_traj_playback")
 import rospy
@@ -195,7 +195,8 @@ def e_check(data):
     global stop 
     stop = data.data
     if stop == "STOP":
-        sys.exit("STOP Recieved. Exiting")
+        print "Calling sys.exit"
+        os.exit()
 
 
     ##

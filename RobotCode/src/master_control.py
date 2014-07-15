@@ -59,6 +59,7 @@ def check_emerg(word): #Checking if anomaly detected
     global globev_emergency 
     globev_emergency = word.data
     #sys.exit("STOP recieved. Exiting.")
+    print "Stop recieved!"
     os._exit(0)
 
 def check_mctrl(word): #Checking what state the robot is in
@@ -171,7 +172,7 @@ def run_task():
             test = compare_pic()
         test = False
         rospy.sleep(1.)
-        haptic('enabled')
+        haptic('Enabled')
         print "haptic control enabled"
         task_control("SwitchControllers")
         print "Controller switched"
@@ -189,7 +190,10 @@ def run_task():
         task_control("GoToHome")
         task_control("GoToHome")
         rospy.sleep(2.)
+        print "AT HOME"
         move_to_pic('l_gripper_tool_frame')
+        rospy.sleep(2.)
+        print "AT PICTURE SPOT"
         raw_input("Press enter to repeat")
 
 if __name__ == "__main__":

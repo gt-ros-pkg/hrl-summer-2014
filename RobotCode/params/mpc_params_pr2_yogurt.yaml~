@@ -6,7 +6,7 @@ haptic_mpc:
     #Weights in optimization
     position_weight: 1.0 #default=5.0
     orientation_weight: 2.0 #default=4.0
-    jerk_opt_weight: 0.0002 #defalut = 0.0001 Increases cost of step size (limits step size)
+    jerk_opt_weight: 0.00025 #defalut = 0.0001 Increases cost of step size (limits step size)
     force_reduction_weight: 0.0005 #default=0.0005
 
     ### Weight Scaling -- Reduce weights on terms in optimization as they are close to satisfied ###
