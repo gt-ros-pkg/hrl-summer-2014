@@ -3,7 +3,7 @@
 #
 #    This node listens to the messages published by the PR2 force/torque sensor,
 #    calculates the magnitude of the force, and compares it to a statistical model
-#    of the magnitude of the force of previous trials of teh PR2 completing the
+#    of the magnitude of the force of previous trials of the PR2 completing the
 #    yogurt feeding task. If the magnitude is greater than 2 standard deviations from
 #    the mean, this node publishes an alert message to the 'emergency' topic. Otherwise
 #    it publishes the magnitude of the force.
