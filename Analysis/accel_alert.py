@@ -91,6 +91,5 @@ class accel_analysis ():
             
 if __name__=='__main__':
     callthis=accel_analysis()
-    callthis.__init__
     while not rospy.is_shutdown():
         rospy.spin()
