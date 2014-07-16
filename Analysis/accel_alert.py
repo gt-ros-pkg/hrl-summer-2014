@@ -1,4 +1,13 @@
 #! /usr/bin/env python
+#
+#    This node listens to the messages published by the PR2 accelerometer,
+#    calculates the magnitude of acceleration, and compares it to a statistical model
+#    of the magnitude of the acceleration of previous trials of teh PR2 completing the
+#    yogurt feeding task. If the magnitude is greater than 2 standard deviations from 
+#    the mean, this node publishes an alert message to the 'emergency' topic. Otherwise
+#    it publishes the magnitude of the acceleration.
+#
+
 from __future__ import division
 import roslib; roslib.load_manifest('pr2_msgs')
 import numpy as np
