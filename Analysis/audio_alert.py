@@ -33,7 +33,7 @@ class audio_core():
         self.secs=5 #number of seconds to establish background noise baseline
         self.stop=True
         self.mu=0	#mean as calculated from previous trials
-        self.sigma=140
+        self.sigma=170
         self.stddevs=1	#number of standard deviations above mean to allow as a threshhold
         self.pub1=rospy.Publisher('emergency', String)
         self.pub2=rospy.Publisher('audio_analysis', numpy_msg(Floats))
