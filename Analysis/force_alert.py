@@ -83,7 +83,6 @@ class force_analysis ():
 
 if __name__=='__main__':
     callthis=force_analysis()
-    callthis.__init__
     while not rospy.is_shutdown():
         rospy.spin()
     
