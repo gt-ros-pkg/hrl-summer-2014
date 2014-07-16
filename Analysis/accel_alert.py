@@ -23,7 +23,7 @@ from scipy import stats
 import math
 
 hand='l'                   #which gripper is being tracked
-mu=9.66                    #mean magnitude of force as calculated from previous trials in Newtons
+mu=9.66                    #mean magnitude of acceleration as calculated from previous trials in Newtons
 sigma2=1.75                #variance
 sigma=math.sqrt(sigma2)    #standard deviation
 dist= stats.norm(mu,sigma) #unit gaussian distribution of magnitude of acceleration of previous tests
