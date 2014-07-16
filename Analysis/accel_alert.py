@@ -23,11 +23,11 @@ from scipy import stats
 import math
 
 hand='l'                   #which gripper is being tracked
-mu=9.66                   #mean magnitude of force as calculated from previous trials in Newtons
-sigma2=1.75
-sigma=math.sqrt(sigma2)
-dist= stats.norm(mu,sigma) #unit gaussian curve of amplitude of previous tests
-stddev=2	           #number of standard deviations above mean to allow as threshhold
+mu=9.66                    #mean magnitude of force as calculated from previous trials in Newtons
+sigma2=1.75                #variance
+sigma=math.sqrt(sigma2)    #standard deviation
+dist= stats.norm(mu,sigma) #unit gaussian distribution of magnitude of acceleration of previous tests
+stddev=2	               #number of standard deviations above mean to allow as threshhold
 
 
 
@@ -52,20 +52,20 @@ class accel_analysis ():
         x=[] 
         y=[]
         z=[]
-        for i in range(len(msg.samples)):
-            x.append(msg.samples[i].x)
+        for i in range(len(msg.samples)):   #grab messages from accelerometer (usually publishes 3 samples per 
+            x.append(msg.samples[i].x)      #ROS message)
             y.append(msg.samples[i].y)
             z.append(msg.samples[i].z)
         
-        self.accel_x.append(np.average(x))
+        self.accel_x.append(np.average(x))  #average the samples from the message 
         self.accel_y.append(np.average(y))
         self.accel_z.append(np.average(z))
         self.worknstuff()
     
     def listen(self, msg):
-        self.message=msg.data
-        if "SwitchControllers" in self.message:
-            self.ignore=True
+        self.message=msg.data                   #when the PR2 is switching between controllers, node will  
+        if "SwitchControllers" in self.message: #ignore possible false positives caused by switching controllers
+            self.ignore=True                    
         elif "FacePos1" in self.message: 
             self.ignore=False
         else:
@@ -83,11 +83,11 @@ class accel_analysis ():
        
         a=z>=stddev*sigma
         
-        if a.any() and not self.ignore:   
+        if a.any() and not self.ignore:   #if an anomaly is detected, publish "STOP" message to 'emergency' topic 
             str1='STOP'                             
             self.pub.publish(str1)
         else:
-            self.pub2.publish(str(self.amag[-1]))       
+            self.pub2.publish(str(self.amag[-1]))   #if no anomaly, publish magnitdue of acceleration
             
 if __name__=='__main__':
     callthis=accel_analysis()
