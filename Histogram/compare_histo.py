@@ -4,8 +4,8 @@
 
 # This file preforms histogram analysis on files created by snap_node.py.
 # It locates two files, expected.jpeg and snapshot.jpeg, in the directory
-# CoHis, and preforms a deviation check of their histograms. If the difference
-# is greater than the expected value (50), the server returns 0, whereas if 
+# CoHis, and preforms a centered deviation check via histograms. If the difference
+# is greater than the expected value (20), the server returns 0, whereas if 
 # the difference is acceptable, the server returns 1. Given a succesful 
 # comparison, the server will update the stored image. If only one file was 
 # located, the server returns a -1. Must be run in the same folder as 
@@ -27,16 +27,18 @@ def analyze_image(num):
     current = cv2.imread('./CoHis/snapshot.jpeg')
     hist_current = cv2.calcHist([current],[0],mask,[256],[0,256])
     current_masked = cv2.bitwise_and(current,current, mask = mask)
-    sum_norm = 0
-    sum_current = 0
+    max_norm = 0
+    norm_loc = 0
+    max_current = 0
+    current_loc = 0
     for i in hist_current:
 	if i != 0:
-	   sum_current = 1
-    if sum_current == 0:
-	print "Unable to locate snapshot.jpeg. This error is expected during the first run."
+	   max_current = 1
+    if max_current == 0:
+	print "Unable to locate snapshot.jpeg."
         return -1
     else:
-	sum_current = 0
+	max_current = 0
     
     #Uncomment below to see what images are being processed
     #cv2.imshow('compared to', img)
@@ -45,11 +47,15 @@ def analyze_image(num):
     #cv2.destroyAllWindows()
 
     for i in range(0,len(hist_norm)): # will need to update this with appropriate area mask
-        if i > 1 and i < 255: 
-	   sum_norm = sum_norm + hist_norm[i]
-           sum_current = sum_current + hist_current[i]
-    print "#%d#"%abs(sum_norm - sum_current)
-    if abs(sum_norm - sum_current) > 100:
+        if i > 5 and i < 200: 
+	   if hist_norm[i] > max_norm:
+               max_norm = hist_norm[i] 
+               norm_loc = i
+           if hist_current[i] > max_current:
+               max_current = hist_norm[i]
+               current_loc = i
+    print "#%d#"%abs(norm_loc - current_loc)
+    if abs(norm_loc - current_loc) > 10:
      return 0
     else:
      os.rename('./CoHis/snapshot.jpeg','./CoHis/expected.jpeg')
