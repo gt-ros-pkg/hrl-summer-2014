@@ -31,7 +31,7 @@ haptic_mpc:
     angle_constraint_threshold: 20.0 #degrees. 
 
     #Goal velocities and update frequency will give max change per step
-    goal_velocity_for_hand: 0.15 #meters/sec. default=0.5
+    goal_velocity_for_hand: 0.25 #meters/sec. default=0.5
     goal_ang_velocity_for_hand: 15.0 #degrees/sec. default=20.0
     frequency: 25.0 # Hz. default=25.0 #NB: PR2 solver slows to ~25-50 Hz with multiple contacts, don't go above this.
 

@@ -1,4 +1,15 @@
 #!/usr/bin/env python  
+
+#Chris Birmingham, HRL, 7/16/14
+#This file takes predetermined tf transforms(relative to either the subjects
+#head for feeding positions or the robots base for the bowl location)
+#and broadcasts that transform. It then looks up the transform and converts
+#it to a posed stamped message that the haptic mpc can use as a goal location.
+#It acts upon recieving messages from the Main_Control and emergency topics.
+#If STOP is recieved from the emergency topic it will dissable the Haptic mpc
+#and exit.
+
+
 import roslib
 roslib.load_manifest('RobotCode')
 roslib.load_manifest('hrl_haptic_mpc')
@@ -31,24 +42,20 @@ class transformer():
         self.stop = ""
         self.i = 0
 
+    #Called if msg sent to emergency topic
     def e_check(self, data):
         self.stop = data.data
         if self.stop != "STOP":
             return
         self.haptic('False')
-        self.haptic('Enabled')
         print "Stopped haptic control!"
         os._exit(0)
-        #self.broadcast("Hold")
-        #while (not rospy.is_shutdown() and self.stop != "STOP"):
-        #    self.send_to_mpc("Hold")
 
 
-
-    #translational note: (red,green,blue)
-    #Quaternian note: (red,green,blue,?)
+    #Broadcasts a set transform as the desired position based on task section
+    #In Rviz, note translation is: (red,green,blue)
+    #                      quaternian is: (red,green,blue,rotation)
     def broadcast(self, position):
-
         if position == "FacePos1":
             self.broadcaster.sendTransform((0.6, -0.1, -0.1),(3, 14, 13, -1),
                             rospy.Time.now(),"/FeedPos", "/head_frame")
@@ -62,16 +69,9 @@ class transformer():
                             rospy.Time.now(),"/FeedPos", "/head_frame")
             print "Broadcast transform for FacePos3"
 
-        #Broadcast current position to force movement to stop
-        if self.stop == "STOP" or position == "Hold":
-            self.broadcaster.sendTransform((0, 0, 0),(0, 0, 0, 1),
-                            rospy.Time.now(),"/FeedPos", "/l_wrist_roll_link") 
-            print "Broadcast transform for STOP or Hold"
-        return
-
-
-
-
+    #Based on previously broadcast position, sends posed stamped msg to haptic mpc
+    #Returns false if could not find the FeedPos frame, true if goal was successfully
+    #   published to hmpc
     def send_to_hmpc(self, position):
         published = False
         try:
@@ -97,30 +97,29 @@ class transformer():
             self.i = self.i+1
 
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-            print "tf Exception, please broadcast transform again"
+            print "tf Exception, please broadcast FeedPos transform again"
         return published
 
 
 
 
     def run(self, data):
-        #Initialization stuff
+        #Initialization upon callback
         position = data.data
         
         if position[0] != "F":
-            print ("Heard: %s, will keep listening." % position)
+            print ("Converter heard: %s, will keep listening." % position)
             return
         else:
-            print ("Heard: %s, Starting." % position)
+            print ("Converter heard: %s, Starting." % position)
 
         task_set = rospy.Publisher('task_check', String)
-        task_set.publish("no")
+        task_set.publish("Converter starting: %s" % position)
 
         #Broadcast the transform of the position for the first time
         self.broadcast(position)
 
         #Send desired pose to hmpc, returns true when pose has been sent
-        print "Entering loop"
         published = False
         while (not rospy.is_shutdown() and published == False):
             published = self.send_to_hmpc(position)
@@ -143,6 +142,7 @@ class transformer():
                     task_set.publish(msg)
                     break
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                print "lookup exception"
                 continue
             self.rat.sleep()
 

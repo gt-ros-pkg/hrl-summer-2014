@@ -6,7 +6,7 @@ haptic_mpc:
     #Weights in optimization
     position_weight: 1.0 #default=5.0
     orientation_weight: 2.0 #default=4.0
-    jerk_opt_weight: 0.00025 #defalut = 0.0001 Increases cost of step size (limits step size)
+    jerk_opt_weight: 0.0005 #default = 0.0001 Increases cost of step size (limits step size)
     force_reduction_weight: 0.0005 #default=0.0005
 
     ### Weight Scaling -- Reduce weights on terms in optimization as they are close to satisfied ###
@@ -31,7 +31,7 @@ haptic_mpc:
     angle_constraint_threshold: 20.0 #degrees. 
 
     #Goal velocities and update frequency will give max change per step
-    goal_velocity_for_hand: 0.15 #meters/sec. default=0.5
+    goal_velocity_for_hand: 0.25 #meters/sec. default=0.5
     goal_ang_velocity_for_hand: 15.0 #degrees/sec. default=20.0
     frequency: 25.0 # Hz. default=25.0 #NB: PR2 solver slows to ~25-50 Hz with multiple contacts, don't go above this.
 

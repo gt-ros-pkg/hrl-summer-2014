@@ -1,4 +1,18 @@
 #! /usr/bin/python
+
+#Chris Birmingham, HRL, 7/16/2014
+
+#This file is a modification of the trajectory playback developed by the HRL 
+#lab. It is used by Team RYDS for trajectory playback in the first half of 
+#the yogurt delivery.
+#This file acts on callbacks from the topics "Main_Control" and "emergency".
+#The emergency callback checks for the string "STOP" and stops all playback and 
+#exits the file. The Main_Control callback runs the trajectory playback with 
+#the file chosen by the string passed through the message. Files stored in
+#RobotCode/trajects
+
+
+
 import time
 import numpy as np
 import cPickle as pickle
@@ -17,11 +31,10 @@ from hrl_pr2_arms.pr2_arm_joint_traj import create_ep_arm, PR2ArmJointTraj
 from hrl_pr2_arms.pr2_controller_switcher import ControllerSwitcher
 from msg import TrajectoryPlayAction, TrajectoryPlayGoal
 
-running = False
 stop = ""
-RATE = 40
+RATE = 10
 #JOINT_TOLERANCES = [0.03, 0.1, 0.1, 0.1, 0.17, 0.15, 0.12] #original
-JOINT_TOLERANCES = [0.003, 0.01, 0.01, 0.01, 0.017, 0.015, 0.012] #testing
+JOINT_TOLERANCES = [0.003, 0.01, 0.01, 0.01, 0.017, 0.015, 0.012] #lowered by 1/10 for improved accuracy
 JOINT_VELOCITY_WEIGHT = [3.0, 1.7, 1.7, 1.0, 1.0, 1.0, 0.5]
 
 #CTRL_NAME_LOW = '%s_joint_controller_low'
@@ -191,13 +204,6 @@ class TrajPlayback(object):
     def preempt(self):
         self.stop_moving()
 
-def e_check(data):
-    global stop 
-    stop = data.data
-    if stop == "STOP":
-        print "Calling sys.exit"
-        os._exit(0)
-
 
     ##
     # Takes file from local parameter '~traj_directory' or from current directory
@@ -241,7 +247,7 @@ def can_exec_traj_from_file(filename, reverse=False):
     return traj_ctrl.can_exec_traj(traj)
 
 def exec_traj_from_file(filename, ctrl_name=CTRL_NAME_LOW, param_file=PARAM_FILE_LOW, 
-                        reverse=False, rate_mult=0.8, blocking=True):
+                        reverse=False, rate_mult=0.99, blocking=True):
     traj, arm_char, rate = load_arm_file(filename)
     if traj is None:
         return
@@ -368,21 +374,24 @@ class TrajectoryServer(object):
     def traj_cancel_cb(self):
         self.traj_ctrl.stop_moving()
 
-def callback(data):
-    global running
-    if running == False:
-        run(data)
-    else:
-        print "trajectory was already running"
 
+#Exits program if STOP is called
+def e_check(data):
+    global stop 
+    stop = data.data
+    if stop == "STOP":
+        print "Calling os._exit on traj_playback"
+        os._exit(0)
+
+#Plays trajectory specified by msg in callback. 
 def run(data):
-    global running
-    running = True
     action = data.data
-    print ("Heard: %s, starting." % action)
-    task_set = rospy.Publisher('task_check', String)
-    task_set.publish("no")
+    print ("Traj playback heard: %s, starting." % action)
 
+    task_set = rospy.Publisher('task_check', String)
+    task_set.publish("Starting %s" %action)
+
+#Not important, not running from command line
     from optparse import OptionParser
     p = OptionParser()
     p.add_option('-f', '--filename', dest="filename", default="",
@@ -414,15 +423,15 @@ def run(data):
                  help="Plays back trajectory in reverse.")
     (opts, args) = p.parse_args()
 
+
+#Selects arm and action based on action taken from msg string
     if opts.right_arm:
         arm_char = 'r'
     elif opts.left_arm:
         arm_char = 'l'
     else:
-        print "Selecting default left arm."
+        print "Traj playback selecting default left arm."
         arm_char = 'l'
-
-    #rospy.init_node("arm_pose_move_controller_%s" % arm_char)
 
     if action == "GoToHome":
         opts.traj_mode = False
@@ -459,7 +468,7 @@ def run(data):
 
 
 
-
+#Traj playback action is called here. For Yogurt delivery only playback_mode is needed
     if opts.save_mode:
         assert(opts.right_arm + opts.left_arm == 1)
         if opts.traj_mode:
@@ -490,8 +499,8 @@ def run(data):
                                     opts.ctrl_name, opts.param_file)
         rospy.spin()
         return
+    #Should only run in playback_mode
     elif opts.playback_mode:
-        #raw_input("Press enter to begin playback")
         print ("starting to perform traj action for: " + action)
         if opts.traj_mode:
             exec_traj_from_file(opts.filename,
@@ -499,6 +508,7 @@ def run(data):
                                 param_file=opts.param_file,
                                 reverse=opts.reverse,
                                 blocking=True)
+        #Should not run in traj_mode
         else:
             print "Beginning moving to trajectory start"
             move_to_setup_from_file(opts.filename,
@@ -521,7 +531,6 @@ def run(data):
             task_set.publish(task_return)
             print "finished trajectory: ", task_return
     action = ""
-    running = False
     return
 
 
@@ -529,7 +538,7 @@ def run(data):
 if __name__ == "__main__":
     rospy.init_node("arm_pose_move_controller_l")
     rospy.Subscriber('emergency', String, e_check)
-    rospy.Subscriber('Main_Control', String, callback)
+    rospy.Subscriber('Main_Control', String, run)
     rospy.spin()
        
 

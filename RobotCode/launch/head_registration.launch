@@ -47,4 +47,6 @@
         <remap from="/kinect_camera" to="$(arg kinect_camera)" />
     </node>
 
+    <include file= "$(find RobotCode)/launch/kinect_clickable_UI.launch" />
+
 </launch>

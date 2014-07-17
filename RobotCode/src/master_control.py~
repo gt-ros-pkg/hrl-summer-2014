@@ -59,6 +59,7 @@ def check_emerg(word): #Checking if anomaly detected
     global globev_emergency 
     globev_emergency = word.data
     #sys.exit("STOP recieved. Exiting.")
+    print "Stop recieved!"
     os._exit(0)
 
 def check_mctrl(word): #Checking what state the robot is in
@@ -91,9 +92,9 @@ def move_to_pic(frame):
 
     g = PointHeadGoal()
     g.target.header.frame_id = frame
-    g.target.point.x = 0.0
-    g.target.point.y = -0.3
-    g.target.point.z = 0.1
+    g.target.point.x = 0.3
+    g.target.point.y = -0.2
+    g.target.point.z = 0
     g.min_duration = rospy.Duration(1.0)
 
     client.send_goal(g)
@@ -169,6 +170,7 @@ def run_task():
             rospy.sleep(1.)
             print "MAKING SECOND PICTURE AND COMPARING"
             test = compare_pic()
+            test = True
         test = False
         rospy.sleep(1.)
         haptic('Enabled')
