@@ -1,4 +1,12 @@
 #! /usr/bin/python
+
+#Chris Birmingham, HRL, 7/16/14
+#This file controls the state the robot is in and what actions 
+#it performs. It broadcasts the robot state to the Main_Control topic
+#and listens to the task_check topic to know when action nodes are done
+#performing an action and listens to emergency to know when an anomaly has 
+#occured. 
+
 from RobotCode.srv import *
 import roslib; roslib.load_manifest('RobotCode')
 roslib.load_manifest('snapshot')
@@ -20,7 +28,6 @@ from snapshot.srv import *
 
 
 ###Initializations###
-#sets global variables 
 #starts publishers, subscribers, and services
 
 rospy.init_node('master_control')
@@ -39,15 +46,16 @@ send.publish("Wait")
 task_set = rospy.Publisher('task_check', String)
 task_set.publish("no")
 
-
-print "waiting for compare_histo and snap_node and haptic mpc"
-rospy.wait_for_service('compare_histo')
-rospy.wait_for_service('snap_node')
+#print "waiting for compare_histo and snap_node and haptic mpc"
 rospy.wait_for_service('haptic_mpc/enable_mpc')
-print "compare_histo and snap_node and haptic mpc found"
-pic = rospy.ServiceProxy('snap_node', CompareHisto)
 haptic = rospy.ServiceProxy('haptic_mpc/enable_mpc', EnableHapticMPC)
 haptic('False')
+#rospy.wait_for_service('compare_histo')
+#rospy.wait_for_service('snap_node')
+#print "compare_histo and snap_node and haptic mpc found"
+#pic = rospy.ServiceProxy('snap_node', CompareHisto)
+#haptic('False')
+
 
 ###Subscribers set global variables used by all functions
 
@@ -66,44 +74,53 @@ def check_mctrl(word): #Checking what state the robot is in
     global globev_main_ctrl 
     globe_main_ctrl = word.data
 
+def usr_input(words):
+    reciever = raw_input('%s' % words)
+    return reciever
 
-##Task Control
-#Publish msgs to control topic and wait for action node to tell when done
-#                               while checking for anomaly on emergency topic 
-#When finished will reset task done variable
+
+###Task Control
+#Publish msgs to control topic and wait for action node to tell when done while
+#checking for anomaly on emergency topic. When finished will reset task done variable
 def task_control(task):
     global globev_emergency
     if globev_emergency == "STOP":
         return
-    print ("In %s task." % task)
+    print ("Main ctrl in %s task." % task)
     send.publish(task)
     global globev_task_check
     while (globev_emergency != "STOP" and globev_task_check != (task+"Done") and not rospy.is_shutdown()):
         r.sleep()
     task_set.publish("no")
-    print ("Done with %s" % task)
+    print ("Main ctrl done with %s" % task)
 
+#Moves head to take picture of target frame
 def move_to_pic(frame):
     global globev_emergency
     if globev_emergency == "STOP":
         return
-    client = actionlib.SimpleActionClient('/head_traj_controller/point_head_action', PointHeadAction)
-    client.wait_for_server()
+    if frame == 'head_frame':
+        client = actionlib.SimpleActionClient('/head_traj_controller/point_head_action', PointHeadAction)
+        client.wait_for_server()
+        g = PointHeadGoal()
+        g.target.header.frame_id = frame
+        g.min_duration = rospy.Duration(1.0)
+        client.send_goal(g)
+        client.wait_for_result()
+    else:    
+        client = actionlib.SimpleActionClient('/head_traj_controller/point_head_action', PointHeadAction)
+        client.wait_for_server()
 
-    g = PointHeadGoal()
-    g.target.header.frame_id = frame
-    g.target.point.x = 0.3
-    g.target.point.y = -0.2
-    g.target.point.z = 0
-    g.min_duration = rospy.Duration(1.0)
+        g = PointHeadGoal()
+        g.target.header.frame_id = frame
+        g.target.point.x = 0.3
+        g.target.point.y = -0.2
+        g.target.point.z = 0
+        g.min_duration = rospy.Duration(1.0)
 
-    client.send_goal(g)
-    client.wait_for_result()
+        client.send_goal(g)
+        client.wait_for_result()
 
-    if client.get_state() == GoalStatus.SUCCEEDED:
-        print "Head Movement Succeeded"
-    else:
-        print "Head Movement Failed"
 
 ###Histogram Nodes Control
 def take_pic():
@@ -134,28 +151,26 @@ def compare_pic():
         print "Changes occured, proceeding"
         got_yogurt = True
     else :
-        print "Image Loaded"
+        print "Image Loaded for first time"
     return got_yogurt
 
 def run_task():
-    rospy.Subscriber('emergency', String, check_emerg)
-    rospy.Subscriber('task_check', String, check_task)
-    rospy.Subscriber('Main_Control', String, check_mctrl)
-    raw_input("Press enter to begin")
+    #move_to_pic('head_frame')
+    #rospy.Subscriber('emergency', String, check_emerg)
+    #rospy.Subscriber('task_check', String, check_task)
+    #rospy.Subscriber('Main_Control', String, check_mctrl)
+    raw_input("Press enter when ready to begin")
     task_control("GoToHome")
-    task_control("GoToHome")
-    rospy.sleep(2.)
-    print "AT HOME"
-    move_to_pic('l_gripper_tool_frame')
-    rospy.sleep(2.)
-    print "AT PICTURE SPOT"
+    rospy.sleep(0.5)
+    #move_to_pic('l_gripper_tool_frame')
+    rospy.sleep(0.5)
     test = False
     while not (rospy.is_shutdown() and globev_emergency != "STOP"):
         while (not test and not rospy.is_shutdown() and globev_emergency != "STOP"):
             rospy.sleep(1.)
-            print "TAKING PICTURE"
-            take_pic()
-            print "PICTURE TAKEN"
+            #print "TAKING PICTURE"
+            #take_pic()
+            #print "PICTURE TAKEN"
             rospy.sleep(.2)
             task_control("HomeToBowl")
             rospy.sleep(.2)
@@ -164,13 +179,15 @@ def run_task():
             task_control("MoveToCheck")
             rospy.sleep(.2)
             task_control("GoToHome")
-            task_control("GoToHome")
-            print "AT HOME2"
-
             rospy.sleep(1.)
-            print "MAKING SECOND PICTURE AND COMPARING"
-            test = compare_pic()
-            test = True
+            #print "TAKING SECOND PICTURE AND COMPARING"
+            #test = compare_pic()
+            #if test:
+            #    print "Yogurt registered. Continuing."
+            #else:
+            #    check = usr_input("Yogurt not registered. (c)ontinue or (r)epeat?")
+            #    if check == 'c':
+            #        test = True
         test = False
         rospy.sleep(1.)
         haptic('Enabled')
@@ -179,23 +196,30 @@ def run_task():
         print "Controller switched"
         task_control("FacePos1")
         rospy.sleep(6.)
-        #raw_input("Press enter when FacePos1 reached")
+        usr_input("Press enter when ready")
         task_control("FacePos2")
-        raw_input("Press enter when FacePos2 reached")
+        usr_input("Press enter when yogurt recieved")
         rospy.sleep(3.)
         task_control("FacePos3")
         rospy.sleep(6.)
-        #raw_input("Press enter when FacePos3 reached")
         haptic('False')
         print "haptic control disabled"
         task_control("GoToHome")
-        task_control("GoToHome")
         rospy.sleep(2.)
         print "AT HOME"
-        move_to_pic('l_gripper_tool_frame')
+        #move_to_pic('l_gripper_tool_frame')
         rospy.sleep(2.)
-        print "AT PICTURE SPOT"
-        raw_input("Press enter to repeat")
+        #print "AT PICTURE SPOT"
+        check = usr_input("Done! (c)ontinue eating, (s)top, or (t)owel?")
+        if check == 't':
+            print "Feature coming soon. A thousand apologies."
+            check = usr_input("(c)ontinue or (s)top?")
+        if check == 's':
+            print "Stopping."
+            os._exit(0)
+        elif check == 'c':
+            print "Continuing"
+
 
 if __name__ == "__main__":
     run_task()

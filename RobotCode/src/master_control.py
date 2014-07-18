@@ -46,16 +46,16 @@ send.publish("Wait")
 task_set = rospy.Publisher('task_check', String)
 task_set.publish("no")
 
-
-print "waiting for compare_histo and snap_node and haptic mpc"
+#print "waiting for compare_histo and snap_node and haptic mpc"
 rospy.wait_for_service('haptic_mpc/enable_mpc')
-haptic('False')
-rospy.wait_for_service('compare_histo')
-rospy.wait_for_service('snap_node')
-print "compare_histo and snap_node and haptic mpc found"
-pic = rospy.ServiceProxy('snap_node', CompareHisto)
 haptic = rospy.ServiceProxy('haptic_mpc/enable_mpc', EnableHapticMPC)
 haptic('False')
+#rospy.wait_for_service('compare_histo')
+#rospy.wait_for_service('snap_node')
+#print "compare_histo and snap_node and haptic mpc found"
+#pic = rospy.ServiceProxy('snap_node', CompareHisto)
+#haptic('False')
+
 
 ###Subscribers set global variables used by all functions
 
@@ -74,7 +74,7 @@ def check_mctrl(word): #Checking what state the robot is in
     global globev_main_ctrl 
     globe_main_ctrl = word.data
 
-def usr_input(words)
+def usr_input(words):
     reciever = raw_input('%s' % words)
     return reciever
 
@@ -99,7 +99,7 @@ def move_to_pic(frame):
     global globev_emergency
     if globev_emergency == "STOP":
         return
-    if frame = 'head_frame':
+    if frame == 'head_frame':
         client = actionlib.SimpleActionClient('/head_traj_controller/point_head_action', PointHeadAction)
         client.wait_for_server()
         g = PointHeadGoal()
@@ -155,22 +155,22 @@ def compare_pic():
     return got_yogurt
 
 def run_task():
-    move_to_pic('head_frame')
-    rospy.Subscriber('emergency', String, check_emerg)
+    #move_to_pic('head_frame')
+    #rospy.Subscriber('emergency', String, check_emerg)
     rospy.Subscriber('task_check', String, check_task)
-    rospy.Subscriber('Main_Control', String, check_mctrl)
+    #rospy.Subscriber('Main_Control', String, check_mctrl)
     raw_input("Press enter when ready to begin")
     task_control("GoToHome")
     rospy.sleep(0.5)
-    move_to_pic('l_gripper_tool_frame')
+    #move_to_pic('l_gripper_tool_frame')
     rospy.sleep(0.5)
     test = False
     while not (rospy.is_shutdown() and globev_emergency != "STOP"):
         while (not test and not rospy.is_shutdown() and globev_emergency != "STOP"):
             rospy.sleep(1.)
-            print "TAKING PICTURE"
-            take_pic()
-            print "PICTURE TAKEN"
+            #print "TAKING PICTURE"
+            #take_pic()
+            #print "PICTURE TAKEN"
             rospy.sleep(.2)
             task_control("HomeToBowl")
             rospy.sleep(.2)
@@ -180,14 +180,14 @@ def run_task():
             rospy.sleep(.2)
             task_control("GoToHome")
             rospy.sleep(1.)
-            print "TAKING SECOND PICTURE AND COMPARING"
-            test = compare_pic()
-            if test:
-                print "Yogurt registered. Continuing."
-            else:
-                check = usr_input("Yogurt not registered. (c)ontinue or (r)epeat?")
-                if check == 'c':
-                    test = True
+            #print "TAKING SECOND PICTURE AND COMPARING"
+            #test = compare_pic()
+            #if test:
+            #    print "Yogurt registered. Continuing."
+            #else:
+            #    check = usr_input("Yogurt not registered. (c)ontinue or (r)epeat?")
+            #    if check == 'c':
+            #        test = True
         test = False
         rospy.sleep(1.)
         haptic('Enabled')
@@ -207,9 +207,9 @@ def run_task():
         task_control("GoToHome")
         rospy.sleep(2.)
         print "AT HOME"
-        move_to_pic('l_gripper_tool_frame')
+        #move_to_pic('l_gripper_tool_frame')
         rospy.sleep(2.)
-        print "AT PICTURE SPOT"
+        #print "AT PICTURE SPOT"
         check = usr_input("Done! (c)ontinue eating, (s)top, or (t)owel?")
         if check == 't':
             print "Feature coming soon. A thousand apologies."
@@ -219,7 +219,7 @@ def run_task():
             os._exit(0)
         elif check == 'c':
             print "Continuing"
-            
+
 
 if __name__ == "__main__":
     run_task()
