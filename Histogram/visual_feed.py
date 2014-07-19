@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# File 4: visual_feed.py
+# File 3: visual_feed.py
 # Caleb Little, HRL, 7/10/2014
 
 # This file is for debug purposes only. It will produce a 
