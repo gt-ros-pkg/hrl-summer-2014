@@ -25,7 +25,7 @@ from matplotlib import pyplot as plt
 
 # Two possible camera topics:
 ## /head_mount_kinect/rgb/image_color/compressed - More accurate, has auto-white issue
-## /wide_stereo/right/image_color/compressed - Less accurate, set gain to 16 to cancel auto-white issue
+## /wide_stereo/right/image_color/compressed - Less accurate, set gain to cancel auto-white issue
 class ActiveSubscription(object):
     def watcher(self, rospath='/wide_stereo/left/image_color/compressed'):
         self.done = False
