@@ -1,60 +1,80 @@
 #!/usr/bin/env python
-# File 1: snap_node.py
+# File 2: compare_histo.py
 # Caleb Little, HRL, 6/13/2014
 
-# This file manages the image capture portion of the histogram check
-# for Team RYDS' project. Once signaled from the master_node, this
-# function references the right wide_stereo color camera on a PR2
-# and saves the files as either expected.jpeg, if this is an odd attempt, or snapshot.jpeg
-# in the event of even numbered calls in the directory CoHis. This service currently
-# returns a -1 if a timeout occurs, and a 1 if a capture was succesful. Must be run
-# in the same folder as compare_histo.py! (Launch file will take care of this)
-import os
-from sensor_msgs.msg import CompressedImage
-import rospy
+# This file preforms histogram analysis on files created by snap_node.py.
+# It locates two files, expected.jpeg and snapshot.jpeg, in the directory
+# CoHis, and preforms a deviation check using histograms. If the difference
+# is greater than the expected value (10), the server returns 0, whereas if 
+# the difference is acceptable, the server returns 1. Given a succesful 
+# comparison, the server will update the stored image. If only one file was 
+# located, the server returns a -1. Must be run in the same folder as 
+# snap_node.py! (Taken care of by launch file.)
 import roslib; roslib.load_manifest('snapshot')
 from snapshot.srv import *
+import rospy
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+import os
 
-## Previous version of rospath was: /wide_stereo/right/image_color/compressed
-class SingleSubscription(object):
-    def snapshot(self, rospath='/head_mount_kinect/rgb/image_color/compressed', dest_path='./CoHis/snapshot.jpeg'):    
-        self.done = False
-        self.trigger = True
-        self.path = os.path.abspath(dest_path)       
-        self.subscriber = rospy.Subscriber(rospath, CompressedImage, self.callback)
+def analyze_image(num):
+    print "I've been called - analyze_image"
+    img = cv2.imread('./CoHis/expected.jpeg')
+    b, g, r = cv2.split(img)
+    mask = np.zeros(img.shape[:2], np.uint8)
+    mask[175:235,225:335] = 225 # Use visual_feed.py to view this window
+    hist_norm_b = cv2.calcHist([b], [0], mask, [256], [0,256])
+    hist_norm_g = cv2.calcHist([g], [0], mask, [256], [0,256])
+    hist_norm_r = cv2.calcHist([r], [0], mask, [256], [0,256])
+    if os.path.isfile('./CoHis/snapshot.jpeg') != True:
+        print "Unable to locate snapshot.jpeg."
+        return -1
+    current = cv2.imread('./CoHis/snapshot.jpeg')
+    b, g, r = cv2.split(current)
+    hist_current_b = cv2.calcHist([b],[0],mask,[256],[0,256])
+    hist_current_g = cv2.calcHist([g],[0],mask,[256],[0,256])
+    hist_current_r = cv2.calcHist([r],[0],mask,[256],[0,256])
+    max_norm_b = 0
+    norm_loc_b = 0
+    max_current_b = 0
+    current_loc_b = 0
+    max_norm_g = 0
+    norm_loc_g = 0
+    max_current_g = 0
+    current_loc_g = 0
+    max_norm_r = 0
+    norm_loc_r = 0
+    max_current_r = 0
+    current_loc_r = 0
 
-    def callback(self, ros_msg):   
-        self.subscriber.unregister()
-        
-        dest_dir = os.path.split(self.path)[0]
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
-	if not os.path.isfile('./CoHis/expected.jpeg') or self.trigger == True:
-	    self.path = './CoHis/expected.jpeg'
-            self.trigger == False
-        else:
-            self.trigger == True
-        with open(self.path, 'w') as f:
-            f.write(ros_msg.data)
-        self.done = True
+    for i in range(0,len(hist_norm_b)):
+        if i > 5 and i < 200: 
+           norm_loc_b = norm_loc_b + hist_norm_b[i] 
+           norm_loc_g = norm_loc_g + hist_norm_g[i] 
+           norm_loc_r = norm_loc_r + hist_norm_r[i] 
+           
+           current_loc_b = current_loc_b + hist_current_b[i] 
+           current_loc_g = current_loc_g + hist_current_g[i] 
+           current_loc_r = current_loc_r + hist_current_r[i]
 
-def bouncer(blarg):
-  sub = SingleSubscription()
-  sub.snapshot()
-  print "I've been called - bouncer"
-  for i in range(10):
-   if sub.done:
-    return 1
-    break
-   rospy.rostime.wallsleep(0.5)
-  print "Error has occured. Check the kinect"
-  return -1
+    #Debug statements commented out
+    #print norm_loc_b, norm_loc_g, norm_loc_r
+    #print current_loc_b, current_loc_g, current_loc_r
+    xb = abs(norm_loc_b - current_loc_b)
+    xg = abs(norm_loc_g - current_loc_g)
+    xr = abs(norm_loc_r - current_loc_r)
+    print "#", xb, "#" , xg, "#", xr, "#"
+    if xb > 10 or xg > 10 or xr > 10:
+     return 0
+    else:
+     return 1
 
-def snapshot():
-    print "I'm running - snap_node"
-    rospy.init_node('snap_node')
-    cheese = rospy.Service('snap_node', CompareHisto, bouncer)
+def compare_histo():
+    print "I'm running - compare_histo"
+    rospy.init_node('compare_histo')
+    hisp = rospy.Service('compare_histo', CompareHisto, analyze_image)
     rospy.spin()
 
 if __name__ == '__main__':
-        snapshot()
+        compare_histo()
