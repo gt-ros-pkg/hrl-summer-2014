@@ -4,8 +4,8 @@
 
 # This file preforms histogram analysis on files created by snap_node.py.
 # It locates two files, expected.jpeg and snapshot.jpeg, in the directory
-# CoHis, and preforms a centered deviation check via histograms. If the difference
-# is greater than the expected value (20), the server returns 0, whereas if 
+# CoHis, and preforms a deviation check using histograms. If the difference
+# is greater than the expected value (10), the server returns 0, whereas if 
 # the difference is acceptable, the server returns 1. Given a succesful 
 # comparison, the server will update the stored image. If only one file was 
 # located, the server returns a -1. Must be run in the same folder as 
@@ -21,44 +21,53 @@ import os
 def analyze_image(num):
     print "I've been called - analyze_image"
     img = cv2.imread('./CoHis/expected.jpeg')
+    b, g, r = cv2.split(img)
     mask = np.zeros(img.shape[:2], np.uint8)
-    mask[300:385,200:335] = 225
-    hist_norm = cv2.calcHist([img], [0], mask, [256], [0,256])
-    current = cv2.imread('./CoHis/snapshot.jpeg')
-    hist_current = cv2.calcHist([current],[0],mask,[256],[0,256])
-    current_masked = cv2.bitwise_and(current,current, mask = mask)
-    max_norm = 0
-    norm_loc = 0
-    max_current = 0
-    current_loc = 0
-    for i in hist_current:
-	if i != 0:
-	   max_current = 1
-    if max_current == 0:
-	print "Unable to locate snapshot.jpeg."
+    mask[175:235,225:335] = 225 # Use visual_feed.py to view this window
+    hist_norm_b = cv2.calcHist([b], [0], mask, [256], [0,256])
+    hist_norm_g = cv2.calcHist([g], [0], mask, [256], [0,256])
+    hist_norm_r = cv2.calcHist([r], [0], mask, [256], [0,256])
+    if os.path.isfile('./CoHis/snapshot.jpeg') != True:
+        print "Unable to locate snapshot.jpeg."
         return -1
-    else:
-	max_current = 0
-    
-    #Uncomment below to see what images are being processed
-    #cv2.imshow('compared to', img)
-    #cv2.imshow('comparing', current_masked)
-    #cv2.waitKey(4500)
-    #cv2.destroyAllWindows()
+    current = cv2.imread('./CoHis/snapshot.jpeg')
+    b, g, r = cv2.split(current)
+    hist_current_b = cv2.calcHist([b],[0],mask,[256],[0,256])
+    hist_current_g = cv2.calcHist([g],[0],mask,[256],[0,256])
+    hist_current_r = cv2.calcHist([r],[0],mask,[256],[0,256])
+    max_norm_b = 0
+    norm_loc_b = 0
+    max_current_b = 0
+    current_loc_b = 0
+    max_norm_g = 0
+    norm_loc_g = 0
+    max_current_g = 0
+    current_loc_g = 0
+    max_norm_r = 0
+    norm_loc_r = 0
+    max_current_r = 0
+    current_loc_r = 0
 
-    for i in range(0,len(hist_norm)): # will need to update this with appropriate area mask
+    for i in range(0,len(hist_norm_b)):
         if i > 5 and i < 200: 
-	   if hist_norm[i] > max_norm:
-               max_norm = hist_norm[i] 
-               norm_loc = i
-           if hist_current[i] > max_current:
-               max_current = hist_norm[i]
-               current_loc = i
-    print "#%d#"%abs(norm_loc - current_loc)
-    if abs(norm_loc - current_loc) > 10:
+           norm_loc_b = norm_loc_b + hist_norm_b[i] 
+           norm_loc_g = norm_loc_g + hist_norm_g[i] 
+           norm_loc_r = norm_loc_r + hist_norm_r[i] 
+           
+           current_loc_b = current_loc_b + hist_current_b[i] 
+           current_loc_g = current_loc_g + hist_current_g[i] 
+           current_loc_r = current_loc_r + hist_current_r[i]
+
+    #Debug statements commented out
+    #print norm_loc_b, norm_loc_g, norm_loc_r
+    #print current_loc_b, current_loc_g, current_loc_r
+    xb = abs(norm_loc_b - current_loc_b)
+    xg = abs(norm_loc_g - current_loc_g)
+    xr = abs(norm_loc_r - current_loc_r)
+    print "#", xb, "#" , xg, "#", xr, "#"
+    if xb > 10 or xg > 10 or xr > 10:
      return 0
     else:
-     os.rename('./CoHis/snapshot.jpeg','./CoHis/expected.jpeg')
      return 1
 
 def compare_histo():
