@@ -13,7 +13,6 @@ import rospy
 import pylab
 from collections import deque
 from std_msgs.msg import String
-from matplotlib import pyplot as plt
 from matplotlib import mlab
 from scipy import stats
 from rospy.numpy_msg import numpy_msg
