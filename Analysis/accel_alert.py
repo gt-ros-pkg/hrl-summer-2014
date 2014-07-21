@@ -12,13 +12,10 @@ from __future__ import division
 import roslib; roslib.load_manifest('pr2_msgs')
 import numpy as np
 import rospy
-import pylab
 from collections import deque
 from geometry_msgs.msg import Vector3
 from pr2_msgs.msg import AccelerometerState 
 from std_msgs.msg import String
-from matplotlib import pyplot as plt
-from matplotlib import mlab
 from scipy import stats
 import math
 
