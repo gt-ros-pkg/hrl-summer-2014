@@ -11,7 +11,7 @@ import math
 hand="l"
 
 class accel_recorder ():
-    def __init__(self):
+    def init(self):
         self.num=input("Enter Trial Number: ")
         rospy.init_node('Accel_listener', anonymous=False)
         self.amag=deque([])
@@ -20,12 +20,12 @@ class accel_recorder ():
         self.accel_z=deque([])
         self.accel_t=deque([])
         self.accel_tn=deque([])
-        self.xfname="Trial%s_ax_part"%self.num
-        self.yfname="Trial%s_ay_part"%self.num
-        self.zfname="Trial%s_az_part"%self.num
-        self.tfname="Trial%s_at_part"%self.num
-        self.magname="Trial%s_amag_part"%self.num
-        self.part="0"
+        self.xfname="./Trial/Trial%s_ax_part"%self.num
+        self.yfname="./Trial/Trial%s_ay_part"%self.num
+        self.zfname="./Trial/Trial%s_az_part"%self.num
+        self.tfname="./Trial/Trial%s_at_part"%self.num
+        self.magname="./Trial/Trial%s_amag_part"%self.num
+        self.part="-1"
         self.file0x=open(self.xfname + "0", "w")
         self.file0y=open(self.yfname + "0", "w")
         self.file0z=open(self.zfname + "0", "w")
@@ -113,38 +113,50 @@ class accel_recorder ():
     
     def listen(self, msg):
         self.message=msg.data                   #grab message to see which subtask is being performed 
-        if self.message is "Part0":
-            self.part="0"
-        elif self.message is "Part1":
-            self.part="1"
-        elif self.message is "Part2":
-            self.part="2"
-        elif self.message is "Part3":
-            self.part="3"
-        elif self.message is "Part4":
-            self.part="4"
-        elif self.message is "Part5":
-            self.part="5"
-        elif self.message is "Part6":
-            self.part="6"
-        elif self.message is "Part7":
-            self.part="7"
-        elif self.message is "Part8":
-            self.part="8"
-        elif self.message is "Part9":
-            self.part="9"
-        elif self.message is "Part10":
-            self.part="10"
-        elif self.message is "Part11":
-            self.part="11"
+        #if self.message is "Part0":
+        #    self.part="0"
+        #elif self.message is "Part1":
+        #    self.part="1"
+        #elif self.message is "Part2":
+        #    self.part="2"
+        #elif self.message is "Part3":
+        #    self.part="3"
+        #elif self.message is "Part4":
+        #    self.part="4"
+        #elif self.message is "Part5":
+        #    self.part="5"
+        #elif self.message is "Part6":
+        #    self.part="6"
+        #elif self.message is "Part7":
+        #    self.part="7"
+        #elif self.message is "Part8":
+        #    self.part="8"
+        #elif self.message is "Part9":
+        #    self.part="9"
+        if self.message[-2] is 't':
+            self.part=self.message[-1]
+        else:
+            if self.message[-1] is '0': 
+                self.part='10'
+            elif self.message[-1] is '1':
+                self.part='11'          
+            
+        
+        if self.message[-1] is 'P':
+            print("Stop recording")
+            self.closefiles()
+        
+        print(self.part)
         self.worknstuff()           
             
     def worknstuff (self):
         #Calculate magnitude of the newest point and add to magnitude deque 
-        self.amag.append(math.sqrt(self.accel_x[-1]**2+self.accel_y[-1]**2+self.accel_z[-1]**2))
+        if len(self.accel_x)>=1:
+            self.amag.append(math.sqrt(self.accel_x[-1]**2+self.accel_y[-1]**2+self.accel_z  [-1]**2))
           
- 
-        index=range(0, len(self.accel_x))  
+        
+        index=range(0, len(self.accel_x))
+        magindex=range(0, len(self.amag)) 
         if self.part is "0":               #write each subtask to a file
             for i in index:
                 a=self.accel_x.popleft()
@@ -155,6 +167,7 @@ class accel_recorder ():
                 self.file0z.write(str(c)+'\n')
                 d=self.accel_t.popleft() + (10**-9)*(self.accel_tn.popleft())-self.t0
                 self.file0t.write(str(d)+'\n')
+            for i in magindex:
                 e=self.amag.popleft()
                 self.file0a.write(str(e)+'\n')
         if self.part is "1": 
@@ -167,6 +180,7 @@ class accel_recorder ():
                 self.file1z.write(str(c)+'\n')
                 d=self.accel_t.popleft() + (10**-9)*(self.accel_tn.popleft())-self.t0
                 self.file1t.write(str(d)+'\n')
+            for i in magindex: 
                 e=self.amag.popleft()
                 self.file1a.write(str(e)+'\n')
         if self.part is "2": 
@@ -179,6 +193,7 @@ class accel_recorder ():
                 self.file2z.write(str(c)+'\n')
                 d=self.accel_t.popleft() + (10**-9)*(self.accel_tn.popleft())-self.t0
                 self.file2t.write(str(d)+'\n')
+            for i in magindex:     
                 e=self.amag.popleft()
                 self.file2a.write(str(e)+'\n')
         if self.part is "3":
@@ -191,6 +206,7 @@ class accel_recorder ():
                 self.file3z.write(str(c)+'\n')
                 d=self.accel_t.popleft() + (10**-9)*(self.accel_tn.popleft())-self.t0
                 self.file3t.write(str(d)+'\n')
+             for i in magindex:    
                 e=self.amag.popleft()
                 self.file3a.write(str(e)+'\n')
         if self.part is "4":        
@@ -203,6 +219,7 @@ class accel_recorder ():
                 self.file4z.write(str(c)+'\n')
                 d=self.accel_t.popleft() + (10**-9)*(self.accel_tn.popleft())-self.t0
                 self.file4t.write(str(d)+'\n')
+             for i in magindex:    
                 e=self.amag.popleft()
                 self.file4a.write(str(e)+'\n')
         if self.part is "5":        
@@ -215,6 +232,7 @@ class accel_recorder ():
                 self.file5z.write(str(c)+'\n')
                 d=self.accel_t.popleft() + (10**-9)*(self.accel_tn.popleft())-self.t0
                 self.file5t.write(str(d)+'\n')
+            for i in magindex:    
                 e=self.amag.popleft()
                 self.file5a.write(str(e)+'\n')    
    
@@ -228,6 +246,7 @@ class accel_recorder ():
                 self.file6z.write(str(c)+'\n')
                 d=self.accel_t.popleft() + (10**-9)*(self.accel_tn.popleft())-self.t0
                 self.file6t.write(str(d)+'\n')
+            for i in magindex:    
                 e=self.amag.popleft()
                 self.file6a.write(str(e)+'\n')
         if self.part is "7":        
@@ -240,6 +259,7 @@ class accel_recorder ():
                 self.file7z.write(str(c)+'\n')
                 d=self.accel_t.popleft() + (10**-9)*(self.accel_tn.popleft())-self.t0
                 self.file7t.write(str(d)+'\n')
+            for i in magindex:    
                 e=self.amag.popleft()
                 self.file7a.write(str(e)+'\n')
         if self.part is "8":        
@@ -252,6 +272,7 @@ class accel_recorder ():
                 self.file8z.write(str(c)+'\n')
                 d=self.accel_t.popleft() + (10**-9)*(self.accel_tn.popleft())-self.t0
                 self.file8t.write(str(d)+'\n')
+            for i in magindex:    
                 e=self.amag.popleft()
                 self.file8a.write(str(e)+'\n')
         if self.part is "9":        
@@ -264,6 +285,7 @@ class accel_recorder ():
                 self.file9z.write(str(c)+'\n')
                 d=self.accel_t.popleft() + (10**-9)*(self.accel_tn.popleft())-self.t0
                 self.file9t.write(str(d)+'\n')
+            for i in magindex:    
                 e=self.amag.popleft()
                 self.file9a.write(str(e)+'\n')
         if self.part is "10":        
@@ -276,6 +298,7 @@ class accel_recorder ():
                 self.file10z.write(str(c)+'\n')
                 d=self.accel_t.popleft() + (10**-9)*(self.accel_tn.popleft())-self.t0
                 self.file10t.write(str(d)+'\n')
+            for i in magindex:    
                 e=self.amag.popleft()
                 self.file10a.write(str(e)+'\n')
         if self.part is "11":        
@@ -288,10 +311,10 @@ class accel_recorder ():
                 self.file11z.write(str(c)+'\n')
                 d=self.accel_t.popleft() + (10**-9)*(self.accel_tn.popleft())-self.t0
                 self.file11t.write(str(d)+'\n')
+            for i in magindex:    
                 e=self.amag.popleft()
                 self.file11a.write(str(e)+'\n')
-        if self.message is 'STOP':
-            self.closefiles()
+        
     def closefiles(self):
 		print("*closing files")
 		self.file0x.close	#close all the files
@@ -357,5 +380,6 @@ class accel_recorder ():
    
 if __name__=='__main__':
 	callthis=accel_recorder()
+	callthis.init()
 	while not rospy.is_shutdown():
 		rospy.spin()

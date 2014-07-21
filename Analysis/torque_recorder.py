@@ -20,11 +20,11 @@ class torque_recorder ():
         self.torque_z=deque([])
         self.torque_t=deque([])
         self.torque_tn=deque([])
-        self.xfname="Trial%s_tx_part"%self.num
-        self.yfname="Trial%s_ty_part"%self.num
-        self.zfname="Trial%s_tz_part"%self.num
-        self.tfname="Trial%s_tt_part"%self.num
-        self.magname="Trial%s_tmag_part"%self.num
+        self.xfname="./Trial/Trial%s_tx_part"%self.num
+        self.yfname="./Trial/Trial%s_ty_part"%self.num
+        self.zfname="./Trial/Trial%s_tz_part"%self.num
+        self.tfname="./Trial/Trial%s_tt_part"%self.num
+        self.magname="./Trial/Trial%s_tmag_part"%self.num
         self.part="0"
         self.file0x=open(self.xfname + "0", "w")
         self.file0y=open(self.yfname + "0", "w")
@@ -129,13 +129,30 @@ class torque_recorder ():
             self.part="10"
         elif self.message is "Part11":
             self.part="11"
+        
+        if self.message[-2] is 't':
+            self.part=self.message[-1]
+        else:
+            if self.message[-1] is '0': 
+                self.part='10'
+            elif self.message[-1] is '1':
+                self.part='11'          
+            
+        
+        if self.message[-1] is 'P':
+            print("Stop recording")
+            self.closefiles()
+
+
         self.worknstuff()           
             
     def worknstuff (self):
         #Calculate magnitude of the newest point and add to magnitude deque 
-        self.tmag.append(math.sqrt(self.torque_x[-1]**2+self.torque_y[-1]**2+self.torque_z[-1]**2))
+        if len(self.torque_x)>=1:
+            self.tmag.append(math.sqrt(self.torque_x[-1]**2+self.torque_y[-1]**2+self.torque_z[-1]**2))
         
-        index=range(0, len(self.torque_x))  
+        index=range(0, len(self.torque_x))
+        magindex=range(0, len(self.tmag))  
         if self.part is "0": 
             for i in index:
                 a=self.torque_x.popleft()
@@ -281,10 +298,9 @@ class torque_recorder ():
                 self.file11t.write(str(d)+'\n')
                 e=self.tmag.popleft()
                 self.file11m.write(str(e)+'\n')
-        if self.message is 'STOP':
-            self.closefiles()
 
     def closefiles(self):
+        print("*closing files")
         self.file0x.close
         self.file0y.close
         self.file0z.close
