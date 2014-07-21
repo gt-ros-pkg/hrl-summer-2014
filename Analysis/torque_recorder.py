@@ -281,7 +281,7 @@ class torque_recorder ():
                 self.file11t.write(str(d)+'\n')
                 e=self.tmag.popleft()
                 self.file11m.write(str(e)+'\n')
-        if self.message is 'stop':
+        if self.message is 'STOP':
             self.closefiles()
 
     def closefiles(self):
