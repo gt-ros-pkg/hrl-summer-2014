@@ -1,11 +1,9 @@
 from __future__ import division
 import numpy as np
 import rospy
-import pylab
 from collections import deque
 from geometry_msgs.msg import Wrench, WrenchStamped
 from std_msgs.msg import String, Header, Time
-from scipy import stats
 import math
 
 hand="l"
