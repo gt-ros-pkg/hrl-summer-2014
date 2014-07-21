@@ -12,12 +12,9 @@
 from __future__ import division
 import numpy as np
 import rospy
-import pylab
 from collections import deque
 from geometry_msgs.msg import WrenchStamped, Wrench
 from std_msgs.msg import String
-from matplotlib import pyplot as plt
-from matplotlib import mlab
 from scipy import stats
 import math
 
