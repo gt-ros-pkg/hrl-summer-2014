@@ -60,7 +60,7 @@ def bouncer(blarg):
     return 1
     break
    rospy.rostime.wallsleep(0.5)
-  print "Error has occured. Check the kinect"
+  print "Error has occured. Check your connection."
   return -1
 
 def snapshot():
