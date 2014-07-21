@@ -23,7 +23,7 @@ def analyze_image(num):
     img = cv2.imread('./CoHis/expected.jpeg')
     b, g, r = cv2.split(img)
     mask = np.zeros(img.shape[:2], np.uint8)
-    mask[175:235,225:335] = 225 # Use visual_feed.py to view this window
+    mask[275:335,225:335] = 225 # Use visual_feed.py to view this window
     hist_norm_b = cv2.calcHist([b], [0], mask, [256], [0,256])
     hist_norm_g = cv2.calcHist([g], [0], mask, [256], [0,256])
     hist_norm_r = cv2.calcHist([r], [0], mask, [256], [0,256])
