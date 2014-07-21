@@ -37,7 +37,7 @@ class ActiveSubscription(object):
             f.write(ros_msg.data)
         img = cv2.imread('./data.jpeg')
         mask = np.zeros(img.shape[:2], np.uint8)
-        mask[175:235,225:335] = 255 # Change this value to match mask
+        mask[175:235,275:375] = 255 # Change this value to match mask
         img_masked = cv2.bitwise_and(img,img,mask = mask)
         img_b = cv2.Canny(img,100,200)
         cv2.imshow('ActiveFeed',img_masked) 
@@ -60,7 +60,7 @@ def video_feed():
     g = PointHeadGoal()
     g.target.header.frame_id = 'l_gripper_tool_frame'
     g.target.point.x = 0.2
-    g.target.point.y = -0.3
+    g.target.point.y = -0.2
     g.target.point.z = -0.3
     g.min_duration = rospy.Duration(1.0)
 
