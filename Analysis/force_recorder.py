@@ -281,7 +281,7 @@ class force_recorder ():
                 self.file11t.write(str(d)+'\n')
                 e=self.fmag.popleft()
                 self.file11f.write(str(e)+'\n')
-        if self.message is 'stop':
+        if self.message is 'STOP':
              self.closefiles()
     def closefiles(self):
         print("*closing files")
