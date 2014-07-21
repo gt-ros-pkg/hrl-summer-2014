@@ -60,8 +60,8 @@ def video_feed():
     g = PointHeadGoal()
     g.target.header.frame_id = 'l_gripper_tool_frame'
     g.target.point.x = 0.2
-    g.target.point.y = -0.2
-    g.target.point.z = 0
+    g.target.point.y = -0.3
+    g.target.point.z = -0.3
     g.min_duration = rospy.Duration(1.0)
 
     client.send_goal(g)
