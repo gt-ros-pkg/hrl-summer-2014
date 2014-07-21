@@ -40,7 +40,7 @@ class SingleSubscription(object):
         dest_dir = os.path.split(self.path)[0]
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
-	if not os.path.isfile('./CoHis/expected.jpeg') or trigger == True:
+	if trigger == True:
             if os.path.isfile(self.path):
                 os.remove(self.path)
 	    self.path = './CoHis/expected.jpeg'
