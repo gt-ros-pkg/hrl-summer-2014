@@ -1,0 +1,17 @@
+<package>
+  <description brief="manifold_systems">
+
+     manifold_systems
+
+  </description>
+  <author>Caleb Little</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/manifold_systems</url>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+  <depend package="std_msgs"/>
+
+</package>
+
+
