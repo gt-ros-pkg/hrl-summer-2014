@@ -31,14 +31,14 @@ import tf_conversions.posemath as pm
 
 class transformer():
     def __init__(self):
-        rospy.init_node('convert_tf_to_pose')
+        rospy.init_node('goal_setter')
         rospy.Subscriber('Main_Control', String, self.run)
         rospy.Subscriber('emergency', String, self.e_check)
         self.haptic = rospy.ServiceProxy('haptic_mpc/enable_mpc', EnableHapticMPC)
         self.broadcaster = tf.TransformBroadcaster()
         self.listener = tf.TransformListener()
         self.pose_pub = rospy.Publisher('haptic_mpc/goal_pose', PoseStamped)
-        self.rat = rospy.Rate(1)
+        self.rat = rospy.Rate(.5)
         self.stop = ""
         self.i = 0
 
@@ -57,62 +57,55 @@ class transformer():
     #                      quaternian is: (red,green,blue,rotation)
     def broadcast(self, position):
         if position == "Part0":
-            self.broadcaster.sendTransform((0.1357099766643028, 0.6168739287720804, 0.3945569233565368)
- (0.6803912143821126, 0.3711032463950152, -0.49364023693606407, 0.3945497337274748),
+            self.broadcaster.sendTransform((0.5309877259429142, 0.4976163448816489, 0.16719537682372823),(0.7765742993649133, -0.37100605554316285, -0.27784851903166524, 0.42671660945891),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            print "Broadcast transform for Pos11":
+            print "Broadcast transform for Pos0"
         elif position == "Part1":
-            self.broadcaster.sendTransform((-0.22733258597247905, 0.8052452563702237, 0.3605831344920665) (0.2120643017871668, 0.7381721245674608, -0.09206398818798957, 0.6337624700927027),
+            self.broadcaster.sendTransform((0.516341299985487, 0.8915608293219441, 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            print "Broadcast transform for Pos1":
+            print "Broadcast transform for Pos1"
         elif position == "Part2":
-            self.broadcaster.sendTransform((0.17190764723544932, 0.5874078141053017, 0.28744989752967687) (0.6922241308754694, -0.2890145635782358, -0.36900127996411564, 0.5487571321251573),
+            self.broadcaster.sendTransform((0.5193456827844327, 0.900079836777675, -0.019204479089017762),(0.4954470843513707, 0.5023693425664104, -0.12672521702586453, 0.6972072501250012),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            print "Broadcast transform for Pos2":
+            print "Broadcast transform for Pos2"
         elif position == "Part3":
-            self.broadcaster.sendTransform((-0.011490289433490288, 0.6765155326014904, 0.3136745100403138) (0.7337599964260816, 0.0411276537095596, -0.17015905336034867, 0.6564683391487004),
+            self.broadcaster.sendTransform((0.5098543997629579, 0.8806008953235813, -0.0974591835731535),(0.45253993336907683, 0.533997128372586, -0.17283744712356874, 0.6929515801756649),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            print "Broadcast transform for Pos3":
+            print "Broadcast transform for Pos3"
         elif position == "Part4":
-            self.broadcaster.sendTransform((-0.011074156386051028, 0.6756694571469335, 0.31330856636884313) (0.7341639298013855, 0.041293630505020724, -0.17145500527434818, 0.6556686216563015),
+            self.broadcaster.sendTransform((0.5418855469129493, 0.9140635229546514, -0.10433053967271771),(0.4903488201115364, 0.49639824283005096, -0.1400581861447639, 0.7025172763884889),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            print "Broadcast transform for Pos4":
+            print "Broadcast transform for Pos4"
         elif position == "Part5":
-            self.broadcaster.sendTransform((0.061150022127563625, 0.6319014085480716, 0.27215534907702665) (0.5792358712581784, 0.3023069412223096, -0.22229237314995706, 0.7236590492600438),
+            self.broadcaster.sendTransform((0.5097778641738854, 0.8811538278444637, -0.07757980710747647),(0.3515887722286045, 0.6131005055762095, -0.07870017707244904, 0.7030642839980877),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            print "Broadcast transform for Pos5":
+            print "Broadcast transform for Pos5"
         elif position == "Part6":
-            self.broadcaster.sendTransform((0.22485082374466764, 0.6325992236289548, 0.31714736509743996) (0.3996848386728747, 0.5403402850150602, -0.27228542770568254, 0.6885819137793376),
+            self.broadcaster.sendTransform((0.516341299985487, 0.8915608293219441, 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            print "Broadcast transform for Pos6":
+            print "Broadcast transform for Pos6"
         elif position == "Part7":
-            self.broadcaster.sendTransform((0.22152175550676378, 0.6270056137834308, 0.27390231686327643) (0.42387113240313345, 0.5189409206009242, -0.20230160497465494, 0.7142182052187057),
+            self.broadcaster.sendTransform((0.5309877259429142, 0.4976163448816489, 0.16719537682372823),(0.7765742993649133, -0.37100605554316285, -0.27784851903166524, 0.42671660945891),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            print "Broadcast transform for Pos7":
+            print "Broadcast transform for Pos7"
         elif position == "Part8":
-            self.broadcaster.sendTransform((0.15875875967708222, 0.5465725037479428, 0.3139556031487017) (0.4763815865776585, 0.5202642655845353, -0.2046747498551779, 0.6785970267377077),
-                            rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            print "Broadcast transform for Pos8":
+            self.broadcaster.sendTransform((0.2741387011303321, 0.05522571699560719, -0.011919598309888757),(-0.023580897114171894, 0.7483633417869068, 0.662774596931439, 0.011228696415565394),
+                            rospy.Time.now(),"/GoalPos", "/head_frame")
+            print "Broadcast transform for Pos8"
         elif position == "Part9":
-            self.broadcaster.sendTransform((-0.22733258597247905, 0.8052452563702237, 0.3605831344920665) (0.2120643017871668, 0.7381721245674608, -0.09206398818798957, 0.6337624700927027),
-                            rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            print "Broadcast transform for Pos9":
+            self.broadcaster.sendTransform((0.12608632401364894, 0.03540318703608347, 0.00607600258150498),(-0.015224467044577382, 0.7345761465214938, 0.6783020152473445, -0.008513323454022942),
+                            rospy.Time.now(),"/GoalPos", "/head_frame")
+            print "Broadcast transform for Pos9"
         elif position == "Part10":
-            self.broadcaster.sendTransform((0.1357099766643028, 0.6168739287720804, 0.3945569233565368) (0.6803912143821126, 0.3711032463950152, -0.49364023693606407, 0.3945497337274748),
-                            rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            print "Broadcast transform for Pos10":
+            self.broadcaster.sendTransform((0.1526437596817016, 0.03715712909254376, 0.0136172136416570133),(-0.050599231123428158, 0.7586479615613725, 0.6342031296736002, 0.0013829359935748063),
+                            rospy.Time.now(),"/GoalPos", "/head_frame")
+            print "Broadcast transform for Pos10"
         elif position == "Part11":
-            self.broadcaster.sendTransform((0.6, -0.1, -0.1),(3, 14, 13, -1),
-                            rospy.Time.now(),"/GoalPos", "/head_frame")
-            print "Broadcast transform for Pos11":
-        elif position =="Part12":
-            self.broadcaster.sendTransform((0.26, -0.0, -0.0),(3, 14, 13, -1),
-                            rospy.Time.now(),"/GoalPos", "/head_frame")
-            print "Broadcast transform for Pos12"
-        elif position =="Part13":
-            self.broadcaster.sendTransform((0.53, -0.0, -0.08),(3, 14, 13, -1),
-                            rospy.Time.now(),"/GoalPos", "/head_frame")
-            print "Broadcast transform for Pos13"
+            self.broadcaster.sendTransform((0.5309877259429142, 0.4976163448816489, 0.16719537682372823),(0.7765742993649133, -0.37100605554316285, -0.27784851903166524, 0.42671660945891),
+                            rospy.Time.now(),"/GoalPos", "/torso_lift_link")
+            print "Broadcast transform for Pos11"
+
+
 
     #Based on previously broadcast position, sends posed stamped msg to haptic mpc
     #Returns false if could not find the FeedPos frame, true if goal was successfully
@@ -172,17 +165,27 @@ class transformer():
         #check if close enough to goal pose, ask for for feedback
         #when close enough, broadcast current location as goal pose, send to hmpc 
         #and tell main program it is done moving
+        timeout = 0
         while (not rospy.is_shutdown() and self.stop != "STOP"):
             self.broadcast(position)
             try:
-                (trans, rot) = self.listener.lookupTransform('/l_wrist_roll_link', '/GoalPos', rospy.Time(0))
+                (trans, rot) = self.listener.lookupTransform('/l_gripper_spoon_frame', '/GoalPos', rospy.Time(0))
                 print trans, rot
-                if (trans[1] < .09 and trans[2] < .09 and trans[0] < .09):
-                    check = raw_input("(r)epeat printout of transform or (c)ontinue to next task?")
-                    if check == 'c':
-                        msg = position + "Done"
-                        task_set.publish(msg)
-                        break
+                if (trans[1] < .03 and trans[2] < .03 and trans[0] < .03 and rot[0] < .3 and rot[1] < .3 and rot[2] < .3):
+                    #check = raw_input("(r)epeat printout of transform or (c)ontinue to next task?")
+                    #if check == 'c':
+                    #rospy.sleep(3)
+                    msg = position + "Done"
+                    task_set.publish(msg)
+                    print "done"
+                    break
+                self.send_to_hmpc(position)
+                timeout = timeout +1
+                if timeout == 8:
+                    msg = position + "Done"
+                    task_set.publish(msg)
+                    print "done"
+                    break
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 print "tf lookup exception"
                 continue

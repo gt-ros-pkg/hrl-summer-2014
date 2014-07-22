@@ -46,15 +46,15 @@ send.publish("Wait")
 task_set = rospy.Publisher('task_check', String)
 task_set.publish("no")
 
-#print "waiting for compare_histo and snap_node and haptic mpc"
+print "waiting for compare_histo and snap_node and haptic mpc"
 rospy.wait_for_service('haptic_mpc/enable_mpc')
 haptic = rospy.ServiceProxy('haptic_mpc/enable_mpc', EnableHapticMPC)
 haptic('False')
-#rospy.wait_for_service('compare_histo')
-#rospy.wait_for_service('snap_node')
-#print "compare_histo and snap_node and haptic mpc found"
-#pic = rospy.ServiceProxy('snap_node', CompareHisto)
-#haptic('False')
+rospy.wait_for_service('compare_histo')
+rospy.wait_for_service('snap_node')
+print "compare_histo and snap_node and haptic mpc found"
+pic = rospy.ServiceProxy('snap_node', CompareHisto)
+haptic('False')
 
 
 ###Subscribers set global variables used by all functions
@@ -84,6 +84,7 @@ def usr_input(words):
 #checking for anomaly on emergency topic. When finished will reset task done variable
 def task_control(task):
     global globev_emergency
+    global send 
     if globev_emergency == "STOP":
         return
     print ("Main ctrl in %s task." % task)
@@ -104,6 +105,9 @@ def move_to_pic(frame):
         client.wait_for_server()
         g = PointHeadGoal()
         g.target.header.frame_id = frame
+        g.target.point.x = 0.2
+        g.target.point.y = -0.2
+        g.target.point.z = -0.3
         g.min_duration = rospy.Duration(1.0)
         client.send_goal(g)
         client.wait_for_result()
@@ -113,24 +117,27 @@ def move_to_pic(frame):
 
         g = PointHeadGoal()
         g.target.header.frame_id = frame
-        g.target.point.x = 0.3
+        g.target.point.x = 0.2
         g.target.point.y = -0.2
-        g.target.point.z = 0
+        g.target.point.z = -0.3
         g.min_duration = rospy.Duration(1.0)
 
         client.send_goal(g)
         client.wait_for_result()
 
 
-###Histogram Nodes Control
+###Histogram Node's Control Functions
 def take_pic():
-    global globev_emergency
-    if globev_emergency == "STOP":
-        return
-    print "taking first picture"
-    pit = 0
-    pit = pic(0)
-    got_yogurt = "no"
+    pit = -1
+    while pit == -1:
+        global globev_emergency
+        if globev_emergency == "STOP":
+            return
+        print "taking first picture"
+        pit = 0
+        pit = pic(0)
+    print "picture returned"
+
 
 def compare_pic():
     global globev_emergency
@@ -154,72 +161,131 @@ def compare_pic():
         print "Image Loaded for first time"
     return got_yogurt
 
-def run_task():
-    #move_to_pic('head_frame')
-    #rospy.Subscriber('emergency', String, check_emerg)
-    rospy.Subscriber('task_check', String, check_task)
-    #rospy.Subscriber('Main_Control', String, check_mctrl)
-    raw_input("Press enter when ready to begin")
-    task_control("GoToHome")
-    rospy.sleep(0.5)
-    #move_to_pic('l_gripper_tool_frame')
-    rospy.sleep(0.5)
-    test = False
-    while not (rospy.is_shutdown() and globev_emergency != "STOP"):
-        while (not test and not rospy.is_shutdown() and globev_emergency != "STOP"):
-            rospy.sleep(1.)
-            #print "TAKING PICTURE"
-            #take_pic()
-            #print "PICTURE TAKEN"
-            rospy.sleep(.2)
-            task_control("HomeToBowl")
-            rospy.sleep(.2)
-            task_control("ScoopYogurt")
-            rospy.sleep(.2)
-            task_control("MoveToCheck")
-            rospy.sleep(.2)
-            task_control("GoToHome")
-            rospy.sleep(1.)
-            #print "TAKING SECOND PICTURE AND COMPARING"
-            #test = compare_pic()
-            #if test:
-            #    print "Yogurt registered. Continuing."
-            #else:
-            #    check = usr_input("Yogurt not registered. (c)ontinue or (r)epeat?")
-            #    if check == 'c':
-            #        test = True
-        test = False
-        rospy.sleep(1.)
-        haptic('Enabled')
-        print "haptic control enabled"
-        task_control("SwitchControllers")
-        print "Controller switched"
-        task_control("FacePos1")
-        rospy.sleep(6.)
-        usr_input("Press enter when ready")
-        task_control("FacePos2")
-        usr_input("Press enter when yogurt recieved")
-        rospy.sleep(3.)
-        task_control("FacePos3")
-        rospy.sleep(6.)
-        haptic('False')
-        print "haptic control disabled"
-        task_control("GoToHome")
-        rospy.sleep(2.)
-        print "AT HOME"
-        #move_to_pic('l_gripper_tool_frame')
-        rospy.sleep(2.)
-        #print "AT PICTURE SPOT"
-        check = usr_input("Done! (c)ontinue eating, (s)top, or (t)owel?")
-        if check == 't':
-            print "Feature coming soon. A thousand apologies."
-            check = usr_input("(c)ontinue or (s)top?")
-        if check == 's':
-            print "Stopping."
-            os._exit(0)
-        elif check == 'c':
-            print "Continuing"
 
+def run_task():
+    move_to_pic('/head_frame')
+    rospy.Subscriber('emergency', String, check_emerg)
+    rospy.Subscriber('task_check', String, check_task)
+    rospy.Subscriber('Main_Control', String, check_mctrl)
+    raw_input("Press enter when ready to begin")
+    haptic('Enabled')
+    part = 0
+    while not rospy.is_shutdown() and globev_emergency != "STOP":
+        task_control("Part%s" %str(part))
+        rospy.sleep(3)
+        if part == 0:
+            move_to_pic('/l_gripper_spoon_frame')
+            take_pic()
+        if part == 7:
+            task_control("Part%s" %str(part))
+            test = compare_pic()
+            #if test == False:
+            #    part = 0
+            #if test == True:
+            #    part = part + 1
+        if part == 8:
+            task_control("Part%s" %str(part))
+        
+        #    if test == False:
+        #        part = 0
+        #    if test == True:
+        #        part = part + 1
+        #if part == 8:
+        #    task_control("Part%s" %part)
+        #    rospy.sleep(3)
+        part = part + 1
+      
+
+#        check = 'c' #raw_input("(c)ontinue, (r)eapeat, go (b)ack two, take (p)icture, compare (h)istogram, or (q)uit?")
+#        if check == 'q':
+#            os._exit(0)
+#        elif check == 'c':
+#            part = part + 1
+#        elif check == 'r':
+#            part = part
+#        elif check == 'b':
+#            part = part - 1
+#        elif check == 'p':
+#            take_pic()
+#        elif check == 'h':
+#            test = compare_pic()
+#            if test == False:
+#                part = 0
+#            if test == True:
+#                part = part + 1
+        if part > 11 or part < 0:
+            check = raw_input("continue? (y) or (n)")
+            print(check)
+            if check == 'n':
+                send.publish("STOP")
+                os._exit(0)
+               
+            elif check == 'y':
+                part = 0
+
+
+
+
+#    task_control("Part0")
+#    rospy.sleep(0.5)
+#    move_to_pic('l_gripper_tool_frame')
+#    rospy.sleep(0.5)
+#    test = False
+#    while not (rospy.is_shutdown() and globev_emergency != "STOP"):
+#        while (not test and not rospy.is_shutdown() and globev_emergency != "STOP"):
+#            rospy.sleep(1.)
+#            print "TAKING PICTURE"
+#            take_pic()
+#            print "PICTURE TAKEN"
+#            rospy.sleep(.2)
+#            task_control("HomeToBowl")
+#            rospy.sleep(.2)
+#            task_control("ScoopYogurt")
+#            rospy.sleep(.2)
+#            task_control("MoveToCheck")
+#            rospy.sleep(.2)
+#            task_control("GoToHome")
+#            rospy.sleep(1.)
+#            #print "TAKING SECOND PICTURE AND COMPARING"
+#            #test = compare_pic()
+#            #if test:
+#            #    print "Yogurt registered. Continuing."
+#            #else:
+#            #    check = usr_input("Yogurt not registered. (c)ontinue or (r)epeat?")
+#            #    if check == 'c':
+#            #        test = True
+#        test = False
+#        rospy.sleep(1.)
+#        haptic('Enabled')
+#        print "haptic control enabled"
+#        task_control("SwitchControllers")
+#        print "Controller switched"
+#        task_control("FacePos1")
+#        rospy.sleep(6.)
+#        usr_input("Press enter when ready")
+#        task_control("FacePos2")
+#        usr_input("Press enter when yogurt recieved")
+#        rospy.sleep(3.)
+#        task_control("FacePos3")
+#        rospy.sleep(6.)
+#        haptic('False')
+#        print "haptic control disabled"
+#        task_control("GoToHome")
+#        rospy.sleep(2.)
+#        print "AT HOME"
+#        #move_to_pic('l_gripper_tool_frame')
+#        rospy.sleep(2.)
+#        #print "AT PICTURE SPOT"
+#        check = usr_input("Done! (c)ontinue eating, (s)top, or (t)owel?")
+#        if check == 't':
+#            print "Feature coming soon. A thousand apologies."
+#            check = usr_input("(c)ontinue or (s)top?")
+#        if check == 's':
+#            print "Stopping."
+#            os._exit(0)
+#        elif check == 'c':
+#            print "Continuing"
+#
 
 if __name__ == "__main__":
     run_task()
