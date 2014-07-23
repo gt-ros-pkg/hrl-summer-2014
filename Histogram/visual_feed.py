@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# File 3: visual_feed.py
+# File 4: visual_feed.py
 # Caleb Little, HRL, 7/10/2014
 
 # This file is for debug purposes only. It will produce a 
@@ -25,7 +25,7 @@ from matplotlib import pyplot as plt
 
 # Two possible camera topics:
 ## /head_mount_kinect/rgb/image_color/compressed - More accurate, has auto-white issue
-## /wide_stereo/right/image_color/compressed - Less accurate, set gain to cancel auto-white issue
+## /wide_stereo/right/image_color/compressed - Less accurate, set gain to 16 to cancel auto-white issue
 class ActiveSubscription(object):
     def watcher(self, rospath='/wide_stereo/left/image_color/compressed'):
         self.done = False
@@ -37,7 +37,7 @@ class ActiveSubscription(object):
             f.write(ros_msg.data)
         img = cv2.imread('./data.jpeg')
         mask = np.zeros(img.shape[:2], np.uint8)
-        mask[335:395,285:395] = 255 # Change this value to match mask
+        mask[300:375,225:325] = 255 # Change this value to match mask
         img_masked = cv2.bitwise_and(img,img,mask = mask)
         img_b = cv2.Canny(img,100,200)
         cv2.imshow('ActiveFeed',img_masked) 
@@ -58,10 +58,10 @@ def video_feed():
     client.wait_for_server()
 
     g = PointHeadGoal()
-    g.target.header.frame_id = 'l_gripper_tool_frame'
-    g.target.point.x = 0.2
-    g.target.point.y = -0.2
-    g.target.point.z = -0.3
+    g.target.header.frame_id = 'l_gripper_spoon_frame'
+    g.target.point.x = 0
+    g.target.point.y = 0
+    g.target.point.z = 0
     g.min_duration = rospy.Duration(1.0)
 
     client.send_goal(g)
