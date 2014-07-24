@@ -63,27 +63,27 @@ class accel_analysis ():
     
     def listen(self, msg):
         self.message=msg.data                     
-       	if self.message[-2] is 't':
+        if self.message[-2] is 't':            #listen for which part of the task if being performed
             self.part=self.message[-1]
         else:
-            if self.message[-1] is '0': 
+            if self.message[-1] is '0':                        
                 self.part='10'
             elif self.message[-1] is '1':
                 self.part='11' 					
         
-        self.mu=mus[int(self.part)]
-        self.sigma=sigmas[int(self.part)]
+        self.mu=mus[int(self.part)]         #grab the correct mean and standard deviation for the model of 
+        self.sigma=sigmas[int(self.part)]   #subtask that is currently being performed
         self.worknstuff()           
             
     def worknstuff (self):
         #Calculate magnitude of the newest point and add to magnitude deque 
         self.amag.append(math.sqrt(self.accel_x[-1]**2+self.accel_y[-1]**2+self.accel_z[-1]**2)
                
-        #Check magnitude   
+        #Calculate the z-score of the magnitude   
         z=(np.array(self.amag[-1])-self.mu)/self.sigma
-        score=abs(z)-(stddev*self.sigma)
+        score=abs(z)-(stddev*self.sigma) #find difference between z-score and threshold number of standard deviations
                 
-        self.pub1.publish(score)   #publish z score of magnitude of acceleration
+        self.pub1.publish(score)   #publish this difference
             
 if __name__=='__main__':
     callthis=accel_analysis()
