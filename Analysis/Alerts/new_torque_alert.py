@@ -46,7 +46,7 @@ class torque_analysis ():
         self.tz=msg.wrench.torque.z
         self.calculate()
 
-    def listen(self, msg):           
+    def listen(self, msg):           #listen to what part of the task is being performed
         self.message=msg.data        
         if self.message[-2] is 't':
             self.part=self.message[-1]
@@ -56,8 +56,8 @@ class torque_analysis ():
             elif self.message[-1] is '1':
                 self.part='11' 					
         
-        self.mu=mus[int(self.part)]
-        self.sigma=sigmas[int(self.part)]
+        self.mu=mus[int(self.part)]        #change mean and standard deviation to match model for subtask
+        self.sigma=sigmas[int(self.part)]  #being performed
         self.calculate
         
     def calculate (self):
@@ -68,10 +68,10 @@ class torque_analysis ():
         #Calculate magnitude of the newest point and add to magnitude deque 
         self.tmag.append(math.sqrt(self.torque_x[-1]**2+self.torque_y[-1]**2+self.torque_z[-1]**2))
                
-        #Check magnitude   
+        #Calculate z-score   
         z=(np.array(self.tmag[-1])-self.mu)/self.sigma   
-        score=abs(z)-(stddev*self.sigma)
-        self.pub1.publish(score) #pusblish z-score of magnitude of torque
+        score=abs(z)-(stddev*self.sigma) #find difference between z-score and threshold standard deviation
+        self.pub1.publish(score) #pusblish this difference
                
      
 
