@@ -31,7 +31,7 @@ if __name__ == '__main__':
         #broadcaster.sendTransform((0.1, -0.03, 0),(0, 0, 0, 1),
         #                    rospy.Time.now(),"/l_gripper_spoon_frame", "/l_gripper_shaver0_frame")
         try:
-            (trans, rot) = listener.lookupTransform('/head_frame', '/l_gripper_spoon_frame', rospy.Time(0))
+            (trans, rot) = listener.lookupTransform('/torso_lift_link', '/r_gripper_tool_frame', rospy.Time(0))
             print trans, rot
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             print "tf lookup failed"
