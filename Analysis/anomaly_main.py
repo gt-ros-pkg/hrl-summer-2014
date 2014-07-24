@@ -15,9 +15,9 @@ class Investigator:
         self.accel_check = True
         self.sensitivity = 50 # Adjustable sensitivity. 0% -> 100%
         print "Anomaly Detection Node: Online"
-        rospy.Subscriber('Force_Results', Float64, self.Force)
-        rospy.Subscriber('Accel_Results', Float64, self.Accel)
-        rospy.Subscriber('Torque_Results', Float64, self.Torque)
+        rospy.Subscriber('Force_Result', Float64, self.Force)
+        rospy.Subscriber('Accel_Result', Float64, self.Accel)
+        rospy.Subscriber('Torque_Result', Float64, self.Torque)
 	overwatch = rospy.Publisher('emergency', String)
         rospy.init_node('Anomaly_Control')
         k = 0
