@@ -22,7 +22,7 @@ mus=np.array([1.53, 1.58, 1.6, 1.08, 1.23, 1.09, 1.54, 1.58, 1.5, 1.56, 1.66, 1.
 sigma2=np.array([0.009, 0.003, 0.002, 0.038, 0.021, 0.0056, 0.026, 0.0041, 0.0021, 0.0069, 0.0035, 0.0018])                  #variance
 sigmas=sigma2**0.5              #standard deviation
 dist= stats.norm(mus[0],sigma) #unit gaussian distribution of magnitude of previous tests
-stddev=1	               #number of standard deviations above mean to allow as threshhold
+stddev=2.5	               #number of standard deviations above mean to allow as threshhold
 
 
 class torque_analysis ():
