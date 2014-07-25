@@ -48,7 +48,8 @@ class Investigator:
                 else:
                     k = 0
             else:
-                print "All good!"
+                a = 1
+                #print "All good!"
             rospy.sleep(0.01) # added buffer delay (may need to adjust)
     
     def Force(self,data):
