@@ -23,7 +23,7 @@ mus=np.array([11.1, 12.1, 15.78, 16.41, 16.29, 17.07, 16.83, 12.04, 9.52, 11.46,
 sigma2=np.array([1.4, 3.59, 1.0, 0.11, 0.81, 1.49, 2.01, 4.82, 0.80, 1.27, 0.09, 5.18])                 #variances
 sigmas=sigma2**0.5    #standard deviation
 dist= stats.norm(mus[0],sigma) #unit gaussian distribution of magnitude of previous tests
-stddev=1	               #number of standard deviations above mean to allow as threshhold
+stddev=0.4	               #number of standard deviations above mean to allow as threshhold
 
 
 class force_analysis ():
