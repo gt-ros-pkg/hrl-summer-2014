@@ -38,7 +38,7 @@ class Investigator:
             if satisfaction == 1:
                 print "Anomaly Possible!"
                 k = k + 1
-                if k > 20: # Require 20 hits in a row to trigger alarm
+                if k > 10: # Require 20 hits in a row to trigger alarm
                     print "Anomaly Detected!"
                     overwatch.publish("STOP")
                     overwatch.publish("STOP")
