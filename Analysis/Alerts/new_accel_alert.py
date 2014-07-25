@@ -15,20 +15,9 @@ import pylab
 from collections import deque
 from geometry_msgs.msg import Vector3
 from pr2_msgs.msg import AccelerometerState 
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, String
 from scipy import stats
 import math
-
-hand='l'                   #which gripper is being tracked
-mus=np.array([9.85, 9.7, 9.16, 8.99, 8.97, 8.98, 9.05, 9.72, 10.13, 9.85, 9.66, 9.34]) 
-#mean magnitudes of acceleration for each part of the task 
-                                                 #as calculated from previous trials in Newtons
-sigma2=np.array([0.052, 0.11, 0.039, 0.021, 0.021, 0.030, 0.058, 0.14, 0.040, 0.054, 0.022, 0.14])                     #variances
-sigmas=sigma2**0.5        #standard deviation                       
-stddev=1.1	               #number of standard deviations above mean to allow as threshhold
-
-
-
 
 class accel_analysis ():
     def __init__(self):
@@ -37,11 +26,18 @@ class accel_analysis ():
         self.accel_x=deque([])
         self.accel_y=deque([])
         self.accel_z=deque([])
-        self.mu=mus[0]
-        self.sigma=sigmas[0]
-        self.dist= stats.norm(mus[0],sigma) #unit gaussian distribution of magnitude of acceleration of previous tests
+        self.hand='l'                   #which gripper is being tracked
+        self.mus=np.array([9.85, 9.7, 9.16, 8.99, 8.97, 8.98, 9.05, 9.72, 10.13, 9.85, 9.66, 9.34]) 
+#mean magnitudes of acceleration for each part of the task 
+                                                 #as calculated from previous trials in Newtons
+        self.sigma2=np.array([0.052, 0.11, 0.039, 0.021, 0.021, 0.030, 0.058, 0.14, 0.040, 0.054, 0.022, 0.14])                     #variances
+        self.sigmas=self.sigma2**0.5        #standard deviation                       
+        self.stddev=1.1	               #number of standard deviations above mean to allow as threshhold
+        self.mu=self.mus[0]
+        self.sigma=self.sigmas[0]
+        self.dist= stats.norm(self.mus[0],self.sigma) #unit gaussian distribution of magnitude of acceleration of previous tests
         self.pub1=rospy.Publisher('Accel_result', Float64)
-        rospy.Subscriber("/accelerometer/%s_gripper_motor"%hand, AccelerometerState, self.callback)
+        rospy.Subscriber("/accelerometer/%s_gripper_motor"%self.hand, AccelerometerState, self.callback)
         rospy.Subscriber('Main_Control', String, self.listen)
         
         self.r=rospy.Rate(10) #in hz
@@ -71,21 +67,22 @@ class accel_analysis ():
             elif self.message[-1] is '1':
                 self.part='11' 					
         
-        self.mu=mus[int(self.part)]         #grab the correct mean and standard deviation for the model of 
-        self.sigma=sigmas[int(self.part)]   #subtask that is currently being performed
+        self.mu=self.mus[int(self.part)]         #grab the correct mean and standard deviation for the model of 
+        self.sigma=self.sigmas[int(self.part)]   #subtask that is currently being performed
         self.worknstuff()           
             
     def worknstuff (self):
         #Calculate magnitude of the newest point and add to magnitude deque 
-        self.amag.append(math.sqrt(self.accel_x[-1]**2+self.accel_y[-1]**2+self.accel_z[-1]**2)
+        self.amag.append(math.sqrt(self.accel_x[-1]**2+self.accel_y[-1]**2+self.accel_z[-1]**2))
                
         #Calculate the z-score of the magnitude   
         z=(np.array(self.amag[-1])-self.mu)/self.sigma
-        score=abs(z)-(stddev*self.sigma) #find difference between z-score and threshold number of standard deviations
+        score=abs(z)-(self.stddev*self.sigma) #find difference between z-score and threshold number of standard deviations
                 
         self.pub1.publish(score)   #publish this difference
             
 if __name__=='__main__':
     callthis=accel_analysis()
+    print "ready"
     while not rospy.is_shutdown():
         rospy.spin()

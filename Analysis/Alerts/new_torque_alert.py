@@ -13,17 +13,9 @@ import rospy
 import pylab
 from collections import deque
 from geometry_msgs.msg import WrenchStamped, Wrench
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, String
 from scipy import stats
 import math
-
-hand='l'                   #which gripper is being tracked
-mus=np.array([1.53, 1.58, 1.6, 1.08, 1.23, 1.09, 1.54, 1.58, 1.5, 1.56, 1.66, 1.59]) #mean magnitude of torque as calculated from previous trials in Newtons
-sigma2=np.array([0.009, 0.003, 0.002, 0.038, 0.021, 0.0056, 0.026, 0.0041, 0.0021, 0.0069, 0.0035, 0.0018])                  #variance
-sigmas=sigma2**0.5              #standard deviation
-dist= stats.norm(mus[0],sigma) #unit gaussian distribution of magnitude of previous tests
-stddev=2.5	               #number of standard deviations above mean to allow as threshhold
-
 
 class torque_analysis ():
     def __init__(self):
@@ -32,10 +24,16 @@ class torque_analysis ():
         self.torque_x=deque([])
         self.torque_y=deque([])
         self.torque_z=deque([])
-        self.mu=mus[0]
-        self.sigma=sigmas[0]
+        self.hand='l'                   #which gripper is being tracked
+        self.mus=np.array([1.53, 1.58, 1.6, 1.08, 1.23, 1.09, 1.54, 1.58, 1.5, 1.56, 1.66, 1.59]) #mean magnitude of torque as calculated from previous trials in Newtons
+        self.sigma2=np.array([0.009, 0.003, 0.002, 0.038, 0.021, 0.0056, 0.026, 0.0041, 0.0021, 0.0069, 0.0035, 0.0018])                  #variance
+        self.sigmas=self.sigma2**0.5              #standard deviation
+        self.sigma=self.sigmas[0]
+        self.dist= stats.norm(self.mus[0],self.sigma) #unit gaussian distribution of magnitude of previous tests
+        self.stddev=2.5	               #number of standard deviations above mean to allow as threshhold
+        self.mu=self.mus[0]
         self.pub1=rospy.Publisher('Torque_result', Float64)
-        rospy.Subscriber("ft/%s_gripper_motor"%hand, WrenchStamped, self.callback)
+        rospy.Subscriber("ft/%s_gripper_motor"%self.hand, WrenchStamped, self.callback)
         rospy.Subscriber('Main_Control', String, self.listen)
         
         self.r=rospy.Rate(10) #in hz
@@ -56,9 +54,9 @@ class torque_analysis ():
             elif self.message[-1] is '1':
                 self.part='11' 					
         
-        self.mu=mus[int(self.part)]        #change mean and standard deviation to match model for subtask
-        self.sigma=sigmas[int(self.part)]  #being performed
-        self.calculate
+        self.mu=self.mus[int(self.part)]        #change mean and standard deviation to match model for subtask
+        self.sigma=self.sigmas[int(self.part)]  #being performed
+        self.calculate()
         
     def calculate (self):
         self.torque_x.append(self.tx)
@@ -70,12 +68,13 @@ class torque_analysis ():
                
         #Calculate z-score   
         z=(np.array(self.tmag[-1])-self.mu)/self.sigma   
-        score=abs(z)-(stddev*self.sigma) #find difference between z-score and threshold standard deviation
+        score=abs(z)-(self.stddev*self.sigma) #find difference between z-score and threshold standard deviation
         self.pub1.publish(score) #pusblish this difference
                
      
 
 if __name__=='__main__':
     callthis=torque_analysis()
+    print "ready"
     while not rospy.is_shutdown():
         rospy.spin()
