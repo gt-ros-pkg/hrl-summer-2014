@@ -1,0 +1,17 @@
+<package>
+  <description brief="torque_alert">
+
+     torque_alert
+
+  </description>
+  <author>Megan Rich</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/torque_alert</url>
+  <depend package="std_msgs"/>
+  <depend package="rospy"/>
+  <depend package="geometry_msgs"/>
+
+</package>
+
+
