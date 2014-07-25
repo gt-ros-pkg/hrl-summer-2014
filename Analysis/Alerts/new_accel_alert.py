@@ -25,7 +25,7 @@ mus=np.array([9.85, 9.7, 9.16, 8.99, 8.97, 8.98, 9.05, 9.72, 10.13, 9.85, 9.66, 
                                                  #as calculated from previous trials in Newtons
 sigma2=np.array([0.052, 0.11, 0.039, 0.021, 0.021, 0.030, 0.058, 0.14, 0.040, 0.054, 0.022, 0.14])                     #variances
 sigmas=sigma2**0.5        #standard deviation                       
-stddev=1	               #number of standard deviations above mean to allow as threshhold
+stddev=1.1	               #number of standard deviations above mean to allow as threshhold
 
 
 
