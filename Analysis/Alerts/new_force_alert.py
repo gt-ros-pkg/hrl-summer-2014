@@ -20,7 +20,7 @@ import math
 
 class force_analysis ():
     def __init__(self):
-        rospy.init_node('FT_listener', anonymous=False)
+        rospy.init_node('F_listener', anonymous=False)
         self.fmag=deque([])
         self.force_x=deque([])
         self.force_y=deque([])

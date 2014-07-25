@@ -19,7 +19,7 @@ import math
 
 class torque_analysis ():
     def __init__(self):
-        rospy.init_node('FT_listener', anonymous=False)
+        rospy.init_node('T_listener', anonymous=False)
         self.tmag=deque([])
         self.torque_x=deque([])
         self.torque_y=deque([])
