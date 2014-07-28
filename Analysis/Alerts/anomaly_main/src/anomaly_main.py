@@ -22,47 +22,51 @@ class Investigator:
         self.force_response = 0
         self.torque_response = 0
         self.accel_response = 0
-        self.sensitivity = 265 # Adjustable sensitivity. 0% -> 300% (adjusted at 265 based on test data)
+        self.sensitivity = 16.50 # Adjustable sensitivity. 0% -> 300% (adjusted at 265 based on test data)
         print "Anomaly Detection Node: Online"
-        rospy.Subscriber('Force_Results', Float64, self.Force)
-        rospy.Subscriber('Accel_Results', Float64, self.Accel)
-        rospy.Subscriber('Torque_Results', Float64, self.Torque)
+        rospy.Subscriber('Force_result', Float64, self.Force)
+        rospy.Subscriber('Accel_result', Float64, self.Accel)
+        rospy.Subscriber('Torque_result', Float64, self.Torque)
         overwatch = rospy.Publisher('emergency', String)
+	puppy = rospy.Publisher('pups', Float64)
         rospy.init_node('Anomaly_Control')
         k = 0
 
         while (not rospy.is_shutdown()):
             satisfaction = 0
-            if (self.torque_response + self.force_response + self.accel_response)*100 > self.sensitivity:
-                satisfaction = 1
-            if satisfaction == 1:
-                print "Anomaly Possible!"
+	    summer = self.torque_response + self.force_response + self.accel_response
+	    puppy.publish(summer)
+            if (summer > self.sensitivity):
+		
+                rospy.loginfo("Anomaly Possible!")
                 k = k + 1
-                if k > 10: # Require 20 hits in a row to trigger alarm
+                if k > 5: # Require 20 hits in a row to trigger alarm
                     print "Anomaly Detected!"
                     overwatch.publish("STOP")
                     overwatch.publish("STOP")
                     overwatch.publish("STOP")
                     overwatch.publish("STOP")
                     overwatch.publish("STOP")
-                else:
-                    k = 0
             else:
-                a = 1
+                k = 0
+
                 #print "All good!"
-            rospy.sleep(0.01) # added buffer delay (may need to adjust)
+            rospy.sleep(0.05) # added buffer delay (may need to adjust)
     
     def Force(self,data):
         print "Force result Recieved"
         self.force_response = data.data
 
+
     def Accel(self,data):
         print "Accelerometer result Recieved"
         self.accel_response = data.data
+
     
     def Torque(self,data):
         print "Torque result Recieved"
         self.torque_response = data.data
+
 
 if __name__ == "__main__":
     ex = Investigator()
