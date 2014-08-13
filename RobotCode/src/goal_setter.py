@@ -123,7 +123,7 @@ class transformer():
                             rospy.Time.now(),"/GoalPos", "/head_frame")
             print "Broadcast transform for Pos10"
 
-
+            rospy.sleep(1)
             self.r_broadcaster.sendTransform((0.12608632401364894, 0.03540318703608347, 0.00607600258150498),(-0.015224467044577382, 0.7345761465214938, 0.6783020152473445, -0.008513323454022942),
                             rospy.Time.now(),"/r_GoalPos", "/head_frame")
             print "Broadcast transforms for Pos10R"
