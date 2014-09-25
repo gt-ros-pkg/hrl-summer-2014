@@ -1,0 +1,4 @@
+<launch>
+    <node name="snap_node" pkg="RYDS" type="snap_node.py" />
+    <node name="compare_histo" pkg="RYDS" type="compare_histo.py" /> 
+</launch>

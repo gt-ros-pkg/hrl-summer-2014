@@ -1,0 +1,104 @@
+#!/usr/bin/env python
+searchfile = open("force","r")
+
+storage = ""
+beta = ""
+for line in searchfile:
+ if "data: " in line : 
+  storage = storage + line
+ if "seq: " in line or "secs: " in line or "nsecs: " in line:
+  beta = beta + line
+searchfile.close()
+
+r1 = ""
+r2 = ""
+r3 = ""
+r4 = ""
+r5 = ""
+r6 = ""
+check1 = 0
+check2 = 0
+check3 = 0
+check4 = 0
+check5 = 0
+check6 = 0
+for i in storage :
+ for j in i :
+  if j == "[" :
+   check1 = 1
+  if check1 == 1 :
+   if j != "," and j != " " and j != "[" :
+    r1 = r1 + j
+   elif j == ",":
+    r1 = r1 + '\n'
+    check1 = 0
+    check2 = 1
+  elif check2 == 1 :
+   if j != "," and j != " " :
+    r2 = r2 + j
+   elif j == "," :
+    r2 = r2 + '\n'
+    check2 = 0
+    check3 = 1
+  elif check3 == 1 :
+   if j != "," and j != " " :
+    r3 = r3 + j
+   elif j == "," :
+    r3 = r3 + '\n'
+    check3 = 0
+    check4 = 1
+  elif check4 == 1 :
+   if j != "," and j != " " :
+    r4 = r4 + j
+   elif j == ","  :
+    r4 = r4 + '\n'
+    check4 = 0
+    check5 = 1
+  elif check5 == 1 :
+   if j != "," and j != " " :
+    r5 = r5 + j
+   elif j == "," :
+    r5 = r5 + '\n'
+    check5 = 0
+    check6 = 1
+  elif check6 == 1 :
+   if j != "]" and j != " " :
+    r6 = r6 + j
+   elif j == "]":
+    r6 = r6 + '\n'
+    check6 = 0
+
+printfile = open("force1","w")
+for i in r1 :
+ printfile.write(i)
+printfile.close
+
+printfile = open("force2","w")
+for i in r2 :
+ printfile.write(i)
+printfile.close
+
+printfile = open("force3","w")
+for i in r3 :
+ printfile.write(i)
+printfile.close
+
+printfile = open("torque1","w")
+for i in r4 :
+ printfile.write(i)
+printfile.close
+
+printfile = open("torque2","w")
+for i in r5 :
+ printfile.write(i)
+printfile.close
+
+printfile = open("torque3","w")
+for i in r6 :
+ printfile.write(i)
+printfile.close
+
+printfile = open("Force_Timing","w")
+for i in beta :
+ printfile.write(i)
+printfile.close

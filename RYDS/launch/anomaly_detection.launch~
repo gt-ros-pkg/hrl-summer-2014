@@ -1,0 +1,9 @@
+<launch>
+    <node name="Accel_listener" pkg="RYDS" type="accel_alert.py" />
+    <node name="F_listener" pkg="RYDS" type="force_alert.py" />
+    <node name="T_listener" pkg="RYDS" type="torque_alert.py" />
+    <node name="audio_talker" pkg="RYDS" type="audio_alert.py" />
+    <node name="Anomaly_Control" pkg="RYDS" type="anomaly_main.py" />
+    <node name="snap_node" pkg="snapshot" type="snap_node.py" />
+    <node name="compare_histo" pkg="snapshot" type="compare_histo.py" /> 
+</launch>

@@ -1,0 +1,19 @@
+<package>
+  <description brief="accel_alert">
+
+     accel_alert
+
+  </description>
+  <author>Megan Rich</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/accel_alert</url>
+  <depend package="std_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="pr2_msgs"/>
+  <depend package="rospy"/>
+  <depend package="roslib"/>
+
+</package>
+
+

@@ -1,0 +1,16 @@
+<package>
+  <description brief="audio_alert">
+
+     audio_alert
+
+  </description>
+  <author>Megan Rich</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/audio_alert</url>
+  <depend package="rospy"/>
+  <depend package="std_msgs"/>
+
+</package>
+
+

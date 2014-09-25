@@ -1,0 +1,9 @@
+<launch>
+    <node pkg="hrl_clickable_display" name="clickable_display" type="clickable_display">
+        <remap from="image" to="/head_registration/confirmation" />
+        <remap from="l_mouse_click" to="l_mouse_click" />
+        <remap from="r_mouse_click" to="r_mouse_click" />
+    </node>
+    <node pkg="RYDS" name="click_shuttle" type="click_shuttle.py">
+    </node> 
+</launch>

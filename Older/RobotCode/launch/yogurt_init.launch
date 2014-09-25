@@ -1,0 +1,8 @@
+<launch>
+
+    <include file= "$(find RobotCode)/launch/head_registration.launch" />
+    <include file= "$(find RobotCode)/launch/start_pr2_mpc_l.launch" />
+    <include file= "$(find RobotCode)/launch/start_pr2_mpc_r.launch" />
+    <include file= "$(find anomaly_main)/launch/anomaly_detection.launch" />
+
+</launch>
