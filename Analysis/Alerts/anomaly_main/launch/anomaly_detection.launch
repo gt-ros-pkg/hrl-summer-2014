@@ -1,9 +1,0 @@
-<launch>
-    <node name="Accel_listener" pkg="accel_alert" type="accel_alert.py" />
-    <node name="F_listener" pkg="force_alert" type="force_alert.py" />
-    <node name="T_listener" pkg="torque_alert" type="torque_alert.py" />
-    <node name="audio_talker" pkg="audio_alert" type="audio_alert.py" />
-    <node name="Anomaly_Control" pkg="anomaly_main" type="anomaly_main.py" /> 
-    <node name="compare_histo" pkg="snapshot" type="compare_histo.py" />
-    <node name="snap_node" pkg="snapshot" type="snap_node.py" />
-</launch>
