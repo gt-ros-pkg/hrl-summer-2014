@@ -42,7 +42,7 @@ class check_head():
         #to the the appropriate tool frame
         #assumes spoon tool is in left gripper
         self.l_arm_length=1.36
-        self.r_arm_length=0.70 #0.94
+        self.r_arm_length=0.94
         #check if left and right arms are within reach of the registered head
         self.calc_left()
         self.calc_right() 
