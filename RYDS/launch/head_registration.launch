@@ -1,6 +1,6 @@
 <launch>
     <arg name="subject" default="dummy_1" />
-    <arg name="data_pkg" value="/home/mrich7/fuerte_workspace/RYDS/bag" />
+    <arg name="data_pkg" value="$(find RYDS)/bag" />
     <arg name="head_pcs_dir" default="$(arg data_pkg)" />
     <arg name="kinect_points" default="/head_mount_kinect/depth_registered/points" />
     <arg name="kinect_camera" default="/head_mount_kinect/rgb/image_color" />
