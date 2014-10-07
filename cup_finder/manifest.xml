@@ -1,0 +1,21 @@
+<package>
+  <description brief="cup_finder">
+
+     cup_finder
+
+  </description>
+  <author>Megan Richnananana</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/cup_finder</url>
+  <depend package="roscpp"/>
+  <depend package="pcl"/>
+  <depend package="image_transport"/>
+  <depend package="image_geometry"/>
+  <depend package="tf"/>
+  <depend package="geometry_msgs"/>
+  <depend package="pcl_ros"/>
+
+</package>
+
+
