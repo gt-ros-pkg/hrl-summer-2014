@@ -28,6 +28,7 @@ from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 from hrl_haptic_manipulation_in_clutter_srvs.srv import *
 import geometry_msgs.msg
 import tf_conversions.posemath as pm
+import threading
 
 
 
@@ -36,6 +37,7 @@ class transformer():
         rospy.init_node('goal_setter')
         rospy.Subscriber('Main_Control', String, self.run)
         rospy.Subscriber('emergency', String, self.e_check)
+        rospy.Subscriber('RYDS_BowlConfirmation', PoseStamped, self.bowlPoseCallback)
         self.haptic = rospy.ServiceProxy('haptic_mpc/enable_mpc', EnableHapticMPC)
         self.r_haptic = rospy.ServiceProxy('right/haptic_mpc/enable_mpc', EnableHapticMPC)
         self.broadcaster = tf.TransformBroadcaster()
@@ -44,9 +46,13 @@ class transformer():
         self.pose_pub = rospy.Publisher('haptic_mpc/goal_pose', PoseStamped)
         self.r_pose_pub = rospy.Publisher('right/haptic_mpc/goal_pose', PoseStamped)
         self.r_pose_pub = rospy.Publisher('right/haptic_mpc/goal_pose', PoseStamped)
+        self.task_set = rospy.Publisher('task_check', String)
         self.rat = rospy.Rate(.5)
         self.stop = ""
         self.i = 0
+
+        self.bowl_lock = threading.RLock() ## bowl state lock
+
 
     #emergency callback function
     def e_check(self, data):
@@ -56,6 +62,13 @@ class transformer():
         self.haptic('False')
         print "Stopped haptic control!"
         os._exit(0)
+
+    # Yogrt bowl pose callback function
+    def bowlPoseCallback(self, msg):
+        with self.bowl_lock:
+            self.bowl_frame = msg.header.frame_id
+            self.bowl_pos = np.matrix([[msg.pose.position.x], [msg.pose.position.y], [msg.pose.position.z]])
+            #self.goal_orient_quat = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
 
 
     #Broadcasts a set transform as the desired position based on task section
@@ -76,33 +89,45 @@ class transformer():
 
         #moving vertically to over bowl:
         elif position == "Part1":
-            self.broadcaster.sendTransform((0.516341299985487, 0.8915608293219441, 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
+            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
+            # self.broadcaster.sendTransform((0.516341299985487, 0.8915608293219441, 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
+            #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos1"
         #dipping at an angle over the bowl:
         elif position == "Part2":
-            self.broadcaster.sendTransform((0.5193456827844327, 0.900079836777675, -0.019204479089017762),(0.4954470843513707, 0.5023693425664104, -0.12672521702586453, 0.6972072501250012),
+            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], -0.019204479089017762),(0.4954470843513707, 0.5023693425664104, -0.12672521702586453, 0.6972072501250012),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
+            # self.broadcaster.sendTransform((0.5193456827844327, 0.900079836777675, -0.019204479089017762),(0.4954470843513707, 0.5023693425664104, -0.12672521702586453, 0.6972072501250012),
+            #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos2"
         #going to the base of the bowl:
         elif position == "Part3":
-            self.broadcaster.sendTransform((0.5098543997629579, 0.8806008953235813, -0.0974591835731535),(0.45253993336907683, 0.533997128372586, -0.17283744712356874, 0.6929515801756649),
+            self.broadcaster.sendTransform((self.bowl_pos[0]-0.01, self.bowl_pos[1]-0.02, self.bowl_pos[2]+0.03),(0.45253993336907683, 0.533997128372586, -0.17283744712356874, 0.6929515801756649),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
+            # self.broadcaster.sendTransform((0.5098543997629579, 0.8806008953235813, -0.0974591835731535),(0.45253993336907683, 0.533997128372586, -0.17283744712356874, 0.6929515801756649),
+            #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos3"
         #going to other end of the bowl in a scooping motion:
         elif position == "Part4":
-            self.broadcaster.sendTransform((0.5418855469129493, 0.9140635229546514, -0.10433053967271771),(0.4903488201115364, 0.49639824283005096, -0.1400581861447639, 0.7025172763884889),
+            self.broadcaster.sendTransform((self.bowl_pos[0]+0.02, self.bowl_pos[1]+0.014, self.bowl_pos[2]-0.04),(0.4903488201115364, 0.49639824283005096, -0.1400581861447639, 0.7025172763884889),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
+            # self.broadcaster.sendTransform((0.5418855469129493, 0.9140635229546514, -0.10433053967271771),(0.4903488201115364, 0.49639824283005096, -0.1400581861447639, 0.7025172763884889),
+            #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos4"
         #going to the lip of the bowl in order to wipe of excess yogurt:
         elif position == "Part5":
-            self.broadcaster.sendTransform((0.5097778641738854, 0.8811538278444637, -0.07757980710747647),(0.3515887722286045, 0.6131005055762095, -0.07870017707244904, 0.7030642839980877),
+            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], self.bowl_pos[2]+0.027),(0.3515887722286045, 0.6131005055762095, -0.07870017707244904, 0.7030642839980877),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
+            # self.broadcaster.sendTransform((0.5097778641738854, 0.8811538278444637, -0.07757980710747647),(0.3515887722286045, 0.6131005055762095, -0.07870017707244904, 0.7030642839980877),
+            #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos5"
         #going back to above bowl:
         elif position == "Part6":
-            self.broadcaster.sendTransform((0.516341299985487, 0.8915608293219441, 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
+            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
+            # self.broadcaster.sendTransform((0.516341299985487, 0.8915608293219441, 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
+            #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos6"
         #going to back to home location for histogram check:
         elif position == "Part7":
@@ -214,8 +239,8 @@ class transformer():
         else:
             print ("Converter heard: %s, Starting." % position)
 
-        task_set = rospy.Publisher('task_check', String)
-        task_set.publish("Converter starting: %s" % position)
+        
+        self.task_set.publish("Converter starting: %s" % position)
 
         #Broadcast the transform of the position for the first time
         self.broadcast(position)
@@ -244,14 +269,14 @@ class transformer():
                     #if check == 'c':
                     #rospy.sleep(3)
                     msg = position + "Done"
-                    task_set.publish(msg)
+                    self.task_set.publish(msg)
                     print "done"
                     break
                 self.send_to_hmpc()
                 timeout = timeout +1
                 if timeout == 4:
                     msg = position + "Done"
-                    task_set.publish(msg)
+                    self.task_set.publish(msg)
                     print "done"
                     break
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
