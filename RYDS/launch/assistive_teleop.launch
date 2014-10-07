@@ -1,6 +1,8 @@
 <launch>
   <include file="$(find pr2_machine)/$(env ROBOT).machine" />
 
+  <include file="$(find cup_finder)/launch/cupFinderRun.launch" />
+
   <!-- Rosbridge, Rosapi, Webserver (roswww), and mjpeg_server -->
   <node name="rosbridge" pkg="rosbridge_server" type="rosbridge.py" output="screen">
       <param name="port" type="int" value="9091" />
