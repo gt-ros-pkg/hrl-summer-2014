@@ -18,6 +18,7 @@ from matplotlib import mlab
 from scipy import stats
 from rospy.numpy_msg import numpy_msg
 from rospy_tutorials.msg import Floats
+from std_msgs.msg import Float32
 import math
 
 import pyaudio
@@ -37,6 +38,7 @@ class audio_core():
         self.stddevs=1	#number of standard deviations above mean to allow as a threshhold
         self.pub1=rospy.Publisher('emergency', String)
         self.pub2=rospy.Publisher('audio_analysis', numpy_msg(Floats))
+        self.raw_audio_pub=rospy.Publisher('feeding/raw_audio', Float32)        
         rospy.init_node('audio_talker', anonymous=False)
         self.p=pyaudio.PyAudio()
         self.stream=self.p.open(format=self.form, channels=self.channel, rate=self.rate1, input=True, frames_per_buffer=self.chunk)
@@ -88,6 +90,10 @@ class audio_core():
                 data=self.stream.read(self.chunk)
                 decoded=np.fromstring(data, 'Float32')
                 decoded2=np.fromstring(data, 'Int16')
+
+                # Raw data publisher
+                self.raw_audio_pub.publish(decoded[0])
+                
                 amp_frames.append(decoded2)
                 frames.append(decoded)
                 l=len(frames)
