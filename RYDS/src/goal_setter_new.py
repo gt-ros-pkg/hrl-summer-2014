@@ -82,8 +82,10 @@ class transformer():
             print "Broadcast transform for Pos0"
 
 
-            self.r_broadcaster.sendTransform((0.5407266943829659, 0.02987365197085315, 0.12104661416190984),(0.8281494537699263, 0.47993966894730516, -0.18113711788590195, 0.22586664409627374),
+            self.r_broadcaster.sendTransform((0.425, -0.480, 0.236),(0.021, -0.011, 0.158, 0.987),
                             rospy.Time.now(),"/r_GoalPos", "/torso_lift_link")
+            #self.r_broadcaster.sendTransform((0.5407266943829659, 0.02987365197085315, 0.12104661416190984),(0.8281494537699263, 0.47993966894730516, -0.18113711788590195, 0.22586664409627374),
+            #                rospy.Time.now(),"/r_GoalPos", "/torso_lift_link")
             print "Broadcast transforms for Pos0R"
 
 
@@ -163,8 +165,10 @@ class transformer():
             print "Broadcast transforms for Pos11L"
 
 
-            self.r_broadcaster.sendTransform((0.5407266943829659, 0.02987365197085315, 0.12104661416190984),(0.8281494537699263, 0.47993966894730516, -0.18113711788590195, 0.22586664409627374),
+            self.r_broadcaster.sendTransform((0.425, -0.480, 0.236),(0.021, -0.011, 0.158, 0.987),
                             rospy.Time.now(),"/r_GoalPos", "/torso_lift_link")
+            #self.r_broadcaster.sendTransform((0.5407266943829659, 0.02987365197085315, 0.12104661416190984),(0.8281494537699263, 0.47993966894730516, -0.18113711788590195, 0.22586664409627374),
+            #                rospy.Time.now(),"/r_GoalPos", "/torso_lift_link")
             print "Broadcast transforms for P11R"
 
 
