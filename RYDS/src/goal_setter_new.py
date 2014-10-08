@@ -1,5 +1,11 @@
 #!/usr/bin/env python  
 
+#Daehyung Park, HRL, 8/10/14
+#This file is updated version of goal_setter.py. Previous structure is kept, but
+#I am gradually rewriting everything. Finally, the structure will be also replaced 
+#reasonable structure. Currently, most new things are copies from hrl_mpc_action
+#from sandbox_dpark_darpa_m3 package. 
+
 #Chris Birmingham, HRL, 7/16/14
 #This file takes predetermined tf transforms(relative to either the subjects
 #head for feeding positions or the robots base for the bowl location)
@@ -30,14 +36,27 @@ import geometry_msgs.msg
 import tf_conversions.posemath as pm
 import threading
 
+import hrl_haptic_manipulation_in_clutter_msgs.msg as haptic_msgs
+import hrl_msgs.msg
 
 
 class transformer():
     def __init__(self):
         rospy.init_node('goal_setter')
-        rospy.Subscriber('Main_Control', String, self.run)
-        rospy.Subscriber('emergency', String, self.e_check)
-        rospy.Subscriber('RYDS_BowlConfirmation', PoseStamped, self.bowlPoseCallback)
+        
+        self.rate = rospy.Rate(.5)
+        self.stop = ""
+        self.i = 0
+
+        self.bowl_lock = threading.RLock() ## bowl state lock
+
+        self.initComms
+        self.initArms()
+        pass
+
+
+    def initComms(self):
+
         self.haptic = rospy.ServiceProxy('haptic_mpc/enable_mpc', EnableHapticMPC)
         self.r_haptic = rospy.ServiceProxy('right/haptic_mpc/enable_mpc', EnableHapticMPC)
         self.broadcaster = tf.TransformBroadcaster()
@@ -47,13 +66,65 @@ class transformer():
         self.r_pose_pub = rospy.Publisher('right/haptic_mpc/goal_pose', PoseStamped)
         self.r_pose_pub = rospy.Publisher('right/haptic_mpc/goal_pose', PoseStamped)
         self.task_set = rospy.Publisher('task_check', String)
-        self.rat = rospy.Rate(.5)
-        self.stop = ""
-        self.i = 0
+        ## self.task_name_pub = rospy.Publisher('feeding/task_name', String)
+        
+        self.mpc_weights_pub = rospy.Publisher("haptic_mpc/weights", haptic_msgs.HapticMpcWeights)          
+        self.r_mpc_weights_pub = rospy.Publisher("right/haptic_mpc/weights", haptic_msgs.HapticMpcWeights)               
+        self.goal_posture_pub = rospy.Publisher("haptic_mpc/goal_posture", hrl_msgs.msg.FloatArray)        
+        self.r_goal_posture_pub = rospy.Publisher("right/haptic_mpc/goal_posture", hrl_msgs.msg.FloatArray)              
+        rospy.Subscriber('Main_Control', String, self.run)
+        rospy.Subscriber('emergency', String, self.e_check)
+        rospy.Subscriber('RYDS_BowlConfirmation', PoseStamped, self.bowlPoseCallback)
 
-        self.bowl_lock = threading.RLock() ## bowl state lock
+        
+    def initArms(self):
 
+        l_joint_state = [1.7013504719569787, -0.2846619162464899, 1.0247881430005377, -1.0400059974175215, 0.7408476425758285, -0.9261340129014745, -0.8541080908968821]
+        r_joint_state = [-1.3805018627854437, -0.3065720013305438, -0.6643104933210333, -1.6377642647201074, -0.014866701346294675, -0.9982517431192833, 2.579269529149009]
 
+        print "Initializing both arm configurations!!"
+        self.setPostureGoal(l_joint_state, arm='l')
+        self.setPostureGoal(r_joint_state, arm='r')
+        
+
+    def setPostureGoal(self, lJoint, arm='l'):
+
+        # Send a goal
+        self.setPostureControl(arm)
+        if arm=='l':
+            self.goal_posture_pub.publish(lJoint)
+        else:
+            self.r_goal_posture_pub.publish(lJoint)
+
+        rospy.sleep(5.0)            
+        ## return self.checkMovement(0.001, timeout)
+
+        
+    def setPositionControl(self, arm='l'):
+        self.weights_msg = haptic_msgs.HapticMpcWeights()
+        self.weights_msg.header.stamp = rospy.Time.now()
+        self.weights_msg.position_weight = 5.0        
+        self.weights_msg.orient_weight   = 0.0
+        self.weights_msg.posture_weight  = 0.0                
+        if arm=='l':
+            self.mpc_weights_pub.publish(self.weights_msg) # Enable position tracking only - disable orientation by setting the weight to 0 
+        else:
+            self.r_mpc_weights_pub.publish(self.weights_msg) # Enable position tracking only - disable orientation by setting the weight to 0 
+
+            
+    def setPostureControl(self, arm='l'):
+        self.weights_msg = haptic_msgs.HapticMpcWeights()
+        self.weights_msg.header.stamp = rospy.Time.now()
+        self.weights_msg.position_weight = 0.0
+        self.weights_msg.orient_weight   = 0.0
+        self.weights_msg.posture_weight  = 5.0        
+        if arm=='l':        
+            self.mpc_weights_pub.publish(self.weights_msg) # Enable position and orientation tracking         
+        else:
+            self.mpc_weights_pub.publish(self.weights_msg) # Enable position and orientation tracking         
+
+        
+    
     #emergency callback function
     def e_check(self, data):
         self.stop = data.data
@@ -77,56 +148,53 @@ class transformer():
     def broadcast(self, position):
         #going to home location in front of camera:
         if position == "Part0":
-            self.broadcaster.sendTransform((0.5309877259429142, 0.4976163448816489, 0.16719537682372823),(0.7765742993649133, -0.37100605554316285, -0.27784851903166524, 0.42671660945891),
-                            rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            print "Broadcast transform for Pos0"
-
+            ## self.broadcaster.sendTransform((0.5309877259429142, 0.4976163448816489, 0.16719537682372823),(0.740, 0.052, -0.100, 0.663),
+            ##                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
+            ## print "Broadcast transform for Pos0"
 
             self.r_broadcaster.sendTransform((0.425, -0.480, 0.236),(0.021, -0.011, 0.158, 0.987),
                             rospy.Time.now(),"/r_GoalPos", "/torso_lift_link")
-            #self.r_broadcaster.sendTransform((0.5407266943829659, 0.02987365197085315, 0.12104661416190984),(0.8281494537699263, 0.47993966894730516, -0.18113711788590195, 0.22586664409627374),
-            #                rospy.Time.now(),"/r_GoalPos", "/torso_lift_link")
             print "Broadcast transforms for Pos0R"
 
 
         #moving vertically to over bowl:
         elif position == "Part1":
-            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
+            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], 0.1950343868326016),(0.740, 0.052, -0.100, 0.663),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.516341299985487, 0.8915608293219441, 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos1"
         #dipping at an angle over the bowl:
         elif position == "Part2":
-            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], -0.019204479089017762),(0.4954470843513707, 0.5023693425664104, -0.12672521702586453, 0.6972072501250012),
+            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], -0.019204479089017762),(0.740, 0.052, -0.100, 0.663),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.5193456827844327, 0.900079836777675, -0.019204479089017762),(0.4954470843513707, 0.5023693425664104, -0.12672521702586453, 0.6972072501250012),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos2"
         #going to the base of the bowl:
         elif position == "Part3":
-            self.broadcaster.sendTransform((self.bowl_pos[0]-0.01, self.bowl_pos[1]-0.02, self.bowl_pos[2]+0.03),(0.45253993336907683, 0.533997128372586, -0.17283744712356874, 0.6929515801756649),
+            self.broadcaster.sendTransform((self.bowl_pos[0]-0.02, self.bowl_pos[1], self.bowl_pos[2]),(0.601, 0.397, -0.412, 0.558),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.5098543997629579, 0.8806008953235813, -0.0974591835731535),(0.45253993336907683, 0.533997128372586, -0.17283744712356874, 0.6929515801756649),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos3"
         #going to other end of the bowl in a scooping motion:
         elif position == "Part4":
-            self.broadcaster.sendTransform((self.bowl_pos[0]+0.02, self.bowl_pos[1]+0.014, self.bowl_pos[2]-0.04),(0.4903488201115364, 0.49639824283005096, -0.1400581861447639, 0.7025172763884889),
+            self.broadcaster.sendTransform((self.bowl_pos[0]+0.02, self.bowl_pos[1], self.bowl_pos[2]),(0.700, 0.201, -0.229, 0.646),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.5418855469129493, 0.9140635229546514, -0.10433053967271771),(0.4903488201115364, 0.49639824283005096, -0.1400581861447639, 0.7025172763884889),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos4"
         #going to the lip of the bowl in order to wipe of excess yogurt:
         elif position == "Part5":
-            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], self.bowl_pos[2]+0.027),(0.3515887722286045, 0.6131005055762095, -0.07870017707244904, 0.7030642839980877),
+            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], self.bowl_pos[2]+0.027),(0.700, 0.201, -0.229, 0.64),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.5097778641738854, 0.8811538278444637, -0.07757980710747647),(0.3515887722286045, 0.6131005055762095, -0.07870017707244904, 0.7030642839980877),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos5"
         #going back to above bowl:
         elif position == "Part6":
-            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
+            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], 0.1950343868326016),(0.740, 0.052, -0.100, 0.663),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.516341299985487, 0.8915608293219441, 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
@@ -160,7 +228,7 @@ class transformer():
 
         #going back to home poistion:
         elif position == "Part11":
-            self.broadcaster.sendTransform((0.5309877259429142, 0.4976163448816489, 0.16719537682372823),(0.7765742993649133, -0.37100605554316285, -0.27784851903166524, 0.42671660945891),
+            self.broadcaster.sendTransform((0.564, 0.797, 0.185),(0.740, 0.052, -0.100, 0.663),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transforms for Pos11L"
 
@@ -255,7 +323,7 @@ class transformer():
             published = self.send_to_hmpc()
             if position == "Part0" or position == "Part10" or position == "Part11":
                 published = self.r_send_to_hmpc()
-            self.rat.sleep()
+            self.rate.sleep()
 
         #check if close enough to goal pose, ask for for feedback
         #when close enough, broadcast current location as goal pose, send to hmpc 
@@ -287,7 +355,7 @@ class transformer():
                 print "tf lookup exception"
                 continue
 
-            self.rat.sleep()
+            self.rate.sleep()
 
 if __name__ == '__main__':
     a = transformer()
