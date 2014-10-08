@@ -18,12 +18,9 @@
 
 # ROS specific files and folders #
 ##################################
-bin
 build
 msg_gen
 srv_gen
 
-# specific to the hrl_haptic_manipulation_in_clutter git repository #
+# specific to the git repository #
 #####################################################################
-#hrl_software_simulation_darpa_m3/bin
-
