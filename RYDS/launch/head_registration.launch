@@ -42,7 +42,11 @@
 	<param name="face_side1" value="l" />
     </node>
 
-    <node pkg="hrl_head_registration" name="head_alignment_confirm" type="head_alignment_confirm"
+    <!--node pkg="hrl_head_registration" name="head_alignment_confirm" type="head_alignment_confirm"
+          output="screen" respawn="True" >
+        <remap from="/kinect_camera" to="$(arg kinect_camera)" />
+    </node-->
+    <node pkg="hrl_head_registration" name="head_bowl_alignment_confirm" type="head_bowl_alignment_confirm"
           output="screen" respawn="True" >
         <remap from="/kinect_camera" to="$(arg kinect_camera)" />
     </node>
