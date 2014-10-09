@@ -80,7 +80,7 @@ class transformer():
         
     def initArms(self):
 
-        l_joint_state = [1.7013504719569787, -0.2846619162464899, 1.0247881430005377, -1.0400059974175215, 0.7408476425758285, -0.9261340129014745, -0.8541080908968821]
+        l_joint_state = [1.7013504719569787, -0.2846619162464899, 1.0247881430005377, -1.0400059974175215+np.pi, 0.7408476425758285, -0.9261340129014745, -0.8541080908968821]
         r_joint_state = [-1.3805018627854437, -0.3065720013305438, -0.6643104933210333, -1.6377642647201074, -0.014866701346294675, -0.9982517431192833, 2.579269529149009]
 
         print "Initializing both arm configurations!!"
@@ -116,6 +116,16 @@ class transformer():
         else:
             self.r_mpc_weights_pub.publish(self.weights_msg) # Enable position tracking only - disable orientation by setting the weight to 0 
 
+    def setOrientControl(self, arm='l'):
+        self.weights_msg = haptic_msgs.HapticMpcWeights()
+        self.weights_msg.header.stamp = rospy.Time.now()
+        self.weights_msg.position_weight = 5.0        
+        self.weights_msg.orient_weight   = 4.0
+        self.weights_msg.posture_weight  = 0.0                
+        if arm=='l':
+            self.mpc_weights_pub.publish(self.weights_msg) # Enable position tracking only - disable orientation by setting the weight to 0 
+        else:
+            self.r_mpc_weights_pub.publish(self.weights_msg) # Enable position tracking only - disable orientation by setting the weight to 0 
             
     def setPostureControl(self, arm='l'):
         self.weights_msg = haptic_msgs.HapticMpcWeights()
@@ -145,17 +155,20 @@ class transformer():
             self.bowl_frame = msg.header.frame_id
             self.bowl_pos = np.matrix([[msg.pose.position.x], [msg.pose.position.y], [msg.pose.position.z]])
             #self.goal_orient_quat = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
-
+            print self.bowl_pos
 
     #Broadcasts a set transform as the desired position based on task section
     #In Rviz, note translation is: (red,green,blue)
     #               quaternian is: (red,green,blue,rotation)
     def broadcast(self, position):
+        self.setOrientControl("l")
+        self.setOrientControl("r")
+
         #going to home location in front of camera:
         if position == "Part0":
-            ## self.broadcaster.sendTransform((0.5309877259429142, 0.4976163448816489, 0.16719537682372823),(0.740, 0.052, -0.100, 0.663),
-            ##                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            ## print "Broadcast transform for Pos0"
+            self.broadcaster.sendTransform((0.5309877259429142, 0.4976163448816489, 0.16719537682372823),(0.7765742993649133, -0.37100605554316285, -0.27784851903166524, 0.42671660945891),
+                                           rospy.Time.now(),"/GoalPos", "/torso_lift_link")
+            print "Broadcast transform for Pos0"
 
             self.r_broadcaster.sendTransform((0.425, -0.480, 0.236),(0.021, -0.011, 0.158, 0.987),
                             rospy.Time.now(),"/r_GoalPos", "/torso_lift_link")
@@ -164,14 +177,14 @@ class transformer():
 
         #moving vertically to over bowl:
         elif position == "Part1":
-            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], 0.1950343868326016),(0.740, 0.052, -0.100, 0.663),
+            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], self.bowl_pos[2]+0.15),(0.740, 0.052, -0.100, 0.663),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.516341299985487, 0.8915608293219441, 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos1"
         #dipping at an angle over the bowl:
         elif position == "Part2":
-            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], -0.019204479089017762),(0.740, 0.052, -0.100, 0.663),
+            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], self.bowl_pos[2]+0.1),(0.740, 0.052, -0.100, 0.663),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.5193456827844327, 0.900079836777675, -0.019204479089017762),(0.4954470843513707, 0.5023693425664104, -0.12672521702586453, 0.6972072501250012),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")

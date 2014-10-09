@@ -8,4 +8,7 @@
         <param name="output_frame" value="/torso_lift_link"/>
         <param name="use_closest_pixel" value="True"/>
     </node>
+
+    <node pkg="cup_finder" type="marker" name="basic_shapes" respawn="true">
+    </node>
 </launch>
