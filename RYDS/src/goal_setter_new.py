@@ -38,6 +38,7 @@ import threading
 
 import hrl_haptic_manipulation_in_clutter_msgs.msg as haptic_msgs
 import hrl_msgs.msg
+from hrl_srvs.srv import None_Bool, None_BoolResponse
 
 
 class transformer():
@@ -52,7 +53,7 @@ class transformer():
 
         self.initComms()    
         rospy.sleep(2.0)
-        self.initArms()            
+        ## self.initArms()            
         pass
 
 
@@ -77,8 +78,10 @@ class transformer():
         rospy.Subscriber('emergency', String, self.e_check)
         rospy.Subscriber('RYDS_BowlConfirmation', PoseStamped, self.bowlPoseCallback)
 
+        self.init_arm_service = rospy.Service('/feeding/init_arms', None_Bool, self.initArmsCallback)
         
-    def initArms(self):
+        
+    def initArmsCallback(self, req):
 
         l_joint_state = [1.7013504719569787, -0.2846619162464899, 1.0247881430005377, -1.0400059974175215+np.pi, 0.7408476425758285, -0.9261340129014745, -0.8541080908968821]
         r_joint_state = [-1.3805018627854437, -0.3065720013305438, -0.6643104933210333, -1.6377642647201074, -0.014866701346294675, -0.9982517431192833, 2.579269529149009]
@@ -86,6 +89,10 @@ class transformer():
         print "Initializing both arm configurations!!"
         self.setPostureGoal(l_joint_state, arm='l')
         self.setPostureGoal(r_joint_state, arm='r')
+
+        rospy.sleep(20.0)
+        return None_BoolResponse(True)
+        
         
 
     def setPostureGoal(self, lJoint, arm='l'):
@@ -161,11 +168,13 @@ class transformer():
     #In Rviz, note translation is: (red,green,blue)
     #               quaternian is: (red,green,blue,rotation)
     def broadcast(self, position):
+
         self.setOrientControl("l")
         self.setOrientControl("r")
-
+            
         #going to home location in front of camera:
         if position == "Part0":
+                
             self.broadcaster.sendTransform((0.5309877259429142, 0.4976163448816489, 0.16719537682372823),(0.7765742993649133, -0.37100605554316285, -0.27784851903166524, 0.42671660945891),
                                            rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos0"
@@ -348,6 +357,7 @@ class transformer():
         #and tell main program it is done moving
         timeout = 0
         while (not rospy.is_shutdown() and self.stop != "STOP"):
+
             self.broadcast(position)
             if position == "Part0" or position == "Part10" or position == "Part11":
                 published = self.r_send_to_hmpc()

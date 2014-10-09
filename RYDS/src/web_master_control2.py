@@ -16,7 +16,7 @@ roslib.load_manifest('actionlib')
 roslib.load_manifest('pr2_controllers_msgs')
 roslib.load_manifest('geometry_msgs')
 roslib.load_manifest('hrl_haptic_mpc')
-from std_msgs.msg import String
+from std_msgs.msg import String, Bool
 import actionlib
 from actionlib_msgs.msg import *
 from pr2_controllers_msgs.msg import *
@@ -26,6 +26,7 @@ import sys
 import os
 import rospy
 from snapshot.srv import *
+from hrl_srvs.srv import None_Bool, None_BoolResponse
 
 
 ###Initializations###
@@ -56,8 +57,13 @@ class Master_Control():
         rospy.wait_for_service('compare_histo')
         rospy.wait_for_service('snap_node')
         print "compare_histo and snap_node and haptic mpc found"
-        self.pic = rospy.ServiceProxy('snap_node', CompareHisto)
+        self.pic = rospy.ServiceProxy('snap_node', CompareHisto)        
         self.haptic('False')
+
+        ## self.init_arm = rospy.Publisher('feeding/init_arms', Bool)
+        rospy.wait_for_service("/feeding/init_arm")
+        self.init_arms = rospy.ServiceProxy("/feeding/init_arms", None_Bool)
+        
         self.message=''
         self.part=0
         self.count=0
@@ -199,7 +205,8 @@ class Master_Control():
         #raw_input("Press enter when ready to begin")
           
         self.haptic('Enabled')
-        self.r_haptic('Enabled')
+        self.r_haptic('Enabled')        
+        ret = self.init_arms()        
 
         self.part = 0
         while not rospy.is_shutdown() and self.globev_emergency != "STOP":
@@ -208,17 +215,18 @@ class Master_Control():
                 #self.send.publish("STOP")
                 print ('Continue?')
                 self.continue_message.publish('Continue?')
+                self.send.publish("STOP")
+
                 if self.message == 'Stop':
-                    self.send.publish("STOP")
                     os._exit(0)
-                 
-                if self.message == 'Continue':
-                   self.send.publish("STOP")
-                   self.part = 0
+                    
+                ret = self.init_arms()        
+
                 self.part=0
                 break
-            if self.part == 12:
+            elif self.part == 12:
                 break
+
             #send part of task to the goal setter
             self.task_control("Part%s" %str(self.part))
             self.task_control("Part%s" %str(self.part)) #Done twice to ensure it reaches the correct location
