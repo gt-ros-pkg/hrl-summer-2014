@@ -50,8 +50,9 @@ class transformer():
 
         self.bowl_lock = threading.RLock() ## bowl state lock
 
-        self.initComms
-        self.initArms()
+        self.initComms()    
+        rospy.sleep(2.0)
+        self.initArms()            
         pass
 
 
@@ -68,8 +69,8 @@ class transformer():
         self.task_set = rospy.Publisher('task_check', String)
         ## self.task_name_pub = rospy.Publisher('feeding/task_name', String)
         
-        self.mpc_weights_pub = rospy.Publisher("haptic_mpc/weights", haptic_msgs.HapticMpcWeights)          
         self.r_mpc_weights_pub = rospy.Publisher("right/haptic_mpc/weights", haptic_msgs.HapticMpcWeights)               
+        self.mpc_weights_pub = rospy.Publisher("/haptic_mpc/weights", haptic_msgs.HapticMpcWeights)          
         self.goal_posture_pub = rospy.Publisher("haptic_mpc/goal_posture", hrl_msgs.msg.FloatArray)        
         self.r_goal_posture_pub = rospy.Publisher("right/haptic_mpc/goal_posture", hrl_msgs.msg.FloatArray)              
         rospy.Subscriber('Main_Control', String, self.run)
@@ -88,15 +89,19 @@ class transformer():
         
 
     def setPostureGoal(self, lJoint, arm='l'):
+        
+        goal_data = hrl_msgs.msg.FloatArray()                                                                                                                                                                                        
+        goal_data.header.stamp = rospy.Time.now() 
+        goal_data.data = lJoint
 
         # Send a goal
         self.setPostureControl(arm)
-        if arm=='l':
-            self.goal_posture_pub.publish(lJoint)
-        else:
-            self.r_goal_posture_pub.publish(lJoint)
 
-        rospy.sleep(5.0)            
+        if arm=='l':
+            self.goal_posture_pub.publish(goal_data)
+        else:
+            self.r_goal_posture_pub.publish(goal_data)
+
         ## return self.checkMovement(0.001, timeout)
 
         
@@ -118,10 +123,10 @@ class transformer():
         self.weights_msg.position_weight = 0.0
         self.weights_msg.orient_weight   = 0.0
         self.weights_msg.posture_weight  = 5.0        
-        if arm=='l':        
+        if arm=='l':     
             self.mpc_weights_pub.publish(self.weights_msg) # Enable position and orientation tracking         
         else:
-            self.mpc_weights_pub.publish(self.weights_msg) # Enable position and orientation tracking         
+            self.r_mpc_weights_pub.publish(self.weights_msg) # Enable position and orientation tracking         
 
         
     
