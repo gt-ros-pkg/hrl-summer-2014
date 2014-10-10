@@ -273,6 +273,7 @@ class transformer():
     def send_to_hmpc(self):
         published = False
         try:
+            self.listener.waitForTransform('/torso_lift_link', '/GoalPos', rospy.Time(0), rospy.Duration(3.0))   
             (trans, rot) = self.listener.lookupTransform('/torso_lift_link', '/GoalPos', rospy.Time(0))
             hdr = std_msgs.msg.Header()
             hdr.frame_id = '/torso_lift_link'
@@ -301,6 +302,7 @@ class transformer():
         
         published = False
         try:
+            self.listener.waitForTransform('/torso_lift_link', '/r_GoalPos', rospy.Time(0), rospy.Duration(3.0))   
             (trans, rot) = self.listener.lookupTransform('/torso_lift_link', '/r_GoalPos', rospy.Time(0))
             hdr = std_msgs.msg.Header()
             hdr.frame_id = '/torso_lift_link'
@@ -361,6 +363,7 @@ class transformer():
             if position == "Part0" or position == "Part10" or position == "Part11":
                 published = self.r_send_to_hmpc()
             try:
+                self.listener.waitForTransform('/l_gripper_spoon_frame', '/GoalPos', rospy.Time(0), rospy.Duration(3.0))   
                 (trans, rot) = self.listener.lookupTransform('/l_gripper_spoon_frame', '/GoalPos', rospy.Time(0))
                 print trans, rot
                 if (trans[1] < .03 and trans[2] < .03 and trans[0] < .03 and rot[0] < .3 and rot[1] < .3 and rot[2] < .3):
