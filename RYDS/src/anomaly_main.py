@@ -49,6 +49,7 @@ class Investigator:
                     overwatch.publish("STOP")
                     overwatch.publish("STOP")
                     overwatch.publish("STOP")
+                    sys.exit()
             else:
                 k = 0
 
