@@ -3,7 +3,7 @@
     <node name="F_listener" pkg="RYDS" type="force_alert.py" />
     <node name="T_listener" pkg="RYDS" type="torque_alert.py" />
     <node name="audio_talker" pkg="RYDS" type="audio_alert.py" />
-    <node name="Anomaly_Control" pkg="RYDS" type="anomaly_main.py" />
+    <node name="Anomaly_Control" pkg="RYDS" type="anomaly_main.py" output="screen"/>
     <node name="snap_node" pkg="RYDS" type="snap_node.py" />
     <node name="compare_histo" pkg="RYDS" type="compare_histo.py" /> 
 </launch>
