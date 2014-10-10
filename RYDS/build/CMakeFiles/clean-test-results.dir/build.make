@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/mrich7/fuerte_workspace/RYDS
+CMAKE_SOURCE_DIR = /home/dave/git/hrl-summer-2014/RYDS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/mrich7/fuerte_workspace/RYDS/build
+CMAKE_BINARY_DIR = /home/dave/git/hrl-summer-2014/RYDS/build
 
 # Utility rule file for clean-test-results.
 
@@ -43,7 +43,7 @@ CMAKE_BINARY_DIR = /home/mrich7/fuerte_workspace/RYDS/build
 include CMakeFiles/clean-test-results.dir/progress.make
 
 CMakeFiles/clean-test-results:
-	if ! rm -rf /home/mrich7/.ros/test_results/RYDS; then echo WARNING:\ failed\ to\ remove\ test-results\ directory ; fi
+	if ! rm -rf /home/dave/.ros/test_results/RYDS; then echo WARNING:\ failed\ to\ remove\ test-results\ directory ; fi
 
 clean-test-results: CMakeFiles/clean-test-results
 clean-test-results: CMakeFiles/clean-test-results.dir/build.make
@@ -58,6 +58,6 @@ CMakeFiles/clean-test-results.dir/clean:
 .PHONY : CMakeFiles/clean-test-results.dir/clean
 
 CMakeFiles/clean-test-results.dir/depend:
-	cd /home/mrich7/fuerte_workspace/RYDS/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/mrich7/fuerte_workspace/RYDS /home/mrich7/fuerte_workspace/RYDS /home/mrich7/fuerte_workspace/RYDS/build /home/mrich7/fuerte_workspace/RYDS/build /home/mrich7/fuerte_workspace/RYDS/build/CMakeFiles/clean-test-results.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/dave/git/hrl-summer-2014/RYDS/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/dave/git/hrl-summer-2014/RYDS /home/dave/git/hrl-summer-2014/RYDS /home/dave/git/hrl-summer-2014/RYDS/build /home/dave/git/hrl-summer-2014/RYDS/build /home/dave/git/hrl-summer-2014/RYDS/build/CMakeFiles/clean-test-results.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/clean-test-results.dir/depend
 

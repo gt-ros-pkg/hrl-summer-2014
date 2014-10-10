@@ -61,7 +61,7 @@ class Master_Control():
         self.haptic('False')
 
         ## self.init_arm = rospy.Publisher('feeding/init_arms', Bool)
-        rospy.wait_for_service("/feeding/init_arm")
+        rospy.wait_for_service("/feeding/init_arms")
         self.init_arms = rospy.ServiceProxy("/feeding/init_arms", None_Bool)
         
         self.message=''
@@ -73,7 +73,7 @@ class Master_Control():
         rospy.Subscriber('user_input', String, self.check_user)
         rospy.Subscriber('head_check_confirm', String, self.head_check)
         
-        
+        print "Init complete!!"
         
         
 
@@ -241,6 +241,7 @@ class Master_Control():
                 self.task_control("Part%s" %str(self.part))
                 test = self.compare_pic()
                 if test == False:
+                    ret = self.init_arms()
                     self.part = 0
             #pause between parts 10 and 11
             if self.part == 10:

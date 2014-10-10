@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/mrich7/fuerte_workspace/RYDS
+CMAKE_SOURCE_DIR = /home/dave/git/hrl-summer-2014/RYDS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/mrich7/fuerte_workspace/RYDS/build
+CMAKE_BINARY_DIR = /home/dave/git/hrl-summer-2014/RYDS/build
 
 # Utility rule file for ROSBUILD_gensrv_py.
 
@@ -47,9 +47,9 @@ CMakeFiles/ROSBUILD_gensrv_py: ../src/RYDS/srv/__init__.py
 ../src/RYDS/srv/__init__.py: ../src/RYDS/srv/_handler.py
 ../src/RYDS/srv/__init__.py: ../src/RYDS/srv/_test.py
 ../src/RYDS/srv/__init__.py: ../src/RYDS/srv/_CompareHisto.py
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/mrich7/fuerte_workspace/RYDS/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dave/git/hrl-summer-2014/RYDS/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/RYDS/srv/__init__.py"
-	/opt/ros/fuerte/share/rospy/rosbuild/scripts/gensrv_py.py --initpy /home/mrich7/fuerte_workspace/RYDS/srv/handler.srv /home/mrich7/fuerte_workspace/RYDS/srv/test.srv /home/mrich7/fuerte_workspace/RYDS/srv/CompareHisto.srv
+	/opt/ros/fuerte/share/rospy/rosbuild/scripts/gensrv_py.py --initpy /home/dave/git/hrl-summer-2014/RYDS/srv/handler.srv /home/dave/git/hrl-summer-2014/RYDS/srv/test.srv /home/dave/git/hrl-summer-2014/RYDS/srv/CompareHisto.srv
 
 ../src/RYDS/srv/_handler.py: ../srv/handler.srv
 ../src/RYDS/srv/_handler.py: /opt/ros/fuerte/share/rospy/rosbuild/scripts/gensrv_py.py
@@ -64,11 +64,35 @@ CMakeFiles/ROSBUILD_gensrv_py: ../src/RYDS/srv/__init__.py
 ../src/RYDS/srv/_handler.py: /opt/ros/fuerte/share/rosbag/manifest.xml
 ../src/RYDS/srv/_handler.py: /opt/ros/fuerte/stacks/pr2_common/pr2_msgs/manifest.xml
 ../src/RYDS/srv/_handler.py: /opt/ros/fuerte/share/roslib/manifest.xml
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/share/sensor_msgs/manifest.xml
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/share/visualization_msgs/manifest.xml
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/stacks/bullet/manifest.xml
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/share/roscpp/manifest.xml
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/share/rosconsole/manifest.xml
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/stacks/geometry/angles/manifest.xml
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/share/roswtf/manifest.xml
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/share/message_filters/manifest.xml
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/share/rosservice/manifest.xml
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/stacks/dynamic_reconfigure/manifest.xml
+../src/RYDS/srv/_handler.py: /home/dave/git/orocos_kinematics_dynamics/orocos_kdl/manifest.xml
+../src/RYDS/srv/_handler.py: /home/dave/git/orocos_kinematics_dynamics/python_orocos_kdl/manifest.xml
+../src/RYDS/srv/_handler.py: /home/dave/git/orocos_kinematics_dynamics/kdl/manifest.xml
+../src/RYDS/srv/_handler.py: /home/dave/git/hrl/hrl_msgs/manifest.xml
+../src/RYDS/srv/_handler.py: /home/dave/git/hrl-lib/hrl_lib/manifest.xml
+../src/RYDS/srv/_handler.py: /home/dave/git/hrl/hrl_srvs/manifest.xml
 ../src/RYDS/srv/_handler.py: /opt/ros/fuerte/stacks/pr2_common/pr2_msgs/msg_gen/generated
 ../src/RYDS/srv/_handler.py: /opt/ros/fuerte/stacks/pr2_common/pr2_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/mrich7/fuerte_workspace/RYDS/build/CMakeFiles $(CMAKE_PROGRESS_2)
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
+../src/RYDS/srv/_handler.py: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
+../src/RYDS/srv/_handler.py: /home/dave/git/hrl/hrl_msgs/msg_gen/generated
+../src/RYDS/srv/_handler.py: /home/dave/git/hrl-lib/hrl_lib/msg_gen/generated
+../src/RYDS/srv/_handler.py: /home/dave/git/hrl/hrl_srvs/srv_gen/generated
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dave/git/hrl-summer-2014/RYDS/build/CMakeFiles $(CMAKE_PROGRESS_2)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/RYDS/srv/_handler.py"
-	/opt/ros/fuerte/share/rospy/rosbuild/scripts/gensrv_py.py --noinitpy /home/mrich7/fuerte_workspace/RYDS/srv/handler.srv
+	/opt/ros/fuerte/share/rospy/rosbuild/scripts/gensrv_py.py --noinitpy /home/dave/git/hrl-summer-2014/RYDS/srv/handler.srv
 
 ../src/RYDS/srv/_test.py: ../srv/test.srv
 ../src/RYDS/srv/_test.py: /opt/ros/fuerte/share/rospy/rosbuild/scripts/gensrv_py.py
@@ -83,11 +107,35 @@ CMakeFiles/ROSBUILD_gensrv_py: ../src/RYDS/srv/__init__.py
 ../src/RYDS/srv/_test.py: /opt/ros/fuerte/share/rosbag/manifest.xml
 ../src/RYDS/srv/_test.py: /opt/ros/fuerte/stacks/pr2_common/pr2_msgs/manifest.xml
 ../src/RYDS/srv/_test.py: /opt/ros/fuerte/share/roslib/manifest.xml
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/share/sensor_msgs/manifest.xml
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/share/visualization_msgs/manifest.xml
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/stacks/bullet/manifest.xml
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/share/roscpp/manifest.xml
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/share/rosconsole/manifest.xml
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/stacks/geometry/angles/manifest.xml
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/share/roswtf/manifest.xml
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/share/message_filters/manifest.xml
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/share/rosservice/manifest.xml
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/stacks/dynamic_reconfigure/manifest.xml
+../src/RYDS/srv/_test.py: /home/dave/git/orocos_kinematics_dynamics/orocos_kdl/manifest.xml
+../src/RYDS/srv/_test.py: /home/dave/git/orocos_kinematics_dynamics/python_orocos_kdl/manifest.xml
+../src/RYDS/srv/_test.py: /home/dave/git/orocos_kinematics_dynamics/kdl/manifest.xml
+../src/RYDS/srv/_test.py: /home/dave/git/hrl/hrl_msgs/manifest.xml
+../src/RYDS/srv/_test.py: /home/dave/git/hrl-lib/hrl_lib/manifest.xml
+../src/RYDS/srv/_test.py: /home/dave/git/hrl/hrl_srvs/manifest.xml
 ../src/RYDS/srv/_test.py: /opt/ros/fuerte/stacks/pr2_common/pr2_msgs/msg_gen/generated
 ../src/RYDS/srv/_test.py: /opt/ros/fuerte/stacks/pr2_common/pr2_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/mrich7/fuerte_workspace/RYDS/build/CMakeFiles $(CMAKE_PROGRESS_3)
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
+../src/RYDS/srv/_test.py: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
+../src/RYDS/srv/_test.py: /home/dave/git/hrl/hrl_msgs/msg_gen/generated
+../src/RYDS/srv/_test.py: /home/dave/git/hrl-lib/hrl_lib/msg_gen/generated
+../src/RYDS/srv/_test.py: /home/dave/git/hrl/hrl_srvs/srv_gen/generated
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dave/git/hrl-summer-2014/RYDS/build/CMakeFiles $(CMAKE_PROGRESS_3)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/RYDS/srv/_test.py"
-	/opt/ros/fuerte/share/rospy/rosbuild/scripts/gensrv_py.py --noinitpy /home/mrich7/fuerte_workspace/RYDS/srv/test.srv
+	/opt/ros/fuerte/share/rospy/rosbuild/scripts/gensrv_py.py --noinitpy /home/dave/git/hrl-summer-2014/RYDS/srv/test.srv
 
 ../src/RYDS/srv/_CompareHisto.py: ../srv/CompareHisto.srv
 ../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/share/rospy/rosbuild/scripts/gensrv_py.py
@@ -102,11 +150,35 @@ CMakeFiles/ROSBUILD_gensrv_py: ../src/RYDS/srv/__init__.py
 ../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/share/rosbag/manifest.xml
 ../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/stacks/pr2_common/pr2_msgs/manifest.xml
 ../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/share/roslib/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/share/sensor_msgs/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/share/visualization_msgs/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/stacks/bullet/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/share/roscpp/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/share/rosconsole/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/stacks/geometry/angles/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/share/roswtf/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/share/message_filters/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/share/rosservice/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/stacks/dynamic_reconfigure/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /home/dave/git/orocos_kinematics_dynamics/orocos_kdl/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /home/dave/git/orocos_kinematics_dynamics/python_orocos_kdl/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /home/dave/git/orocos_kinematics_dynamics/kdl/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /home/dave/git/hrl/hrl_msgs/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /home/dave/git/hrl-lib/hrl_lib/manifest.xml
+../src/RYDS/srv/_CompareHisto.py: /home/dave/git/hrl/hrl_srvs/manifest.xml
 ../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/stacks/pr2_common/pr2_msgs/msg_gen/generated
 ../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/stacks/pr2_common/pr2_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/mrich7/fuerte_workspace/RYDS/build/CMakeFiles $(CMAKE_PROGRESS_4)
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
+../src/RYDS/srv/_CompareHisto.py: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
+../src/RYDS/srv/_CompareHisto.py: /home/dave/git/hrl/hrl_msgs/msg_gen/generated
+../src/RYDS/srv/_CompareHisto.py: /home/dave/git/hrl-lib/hrl_lib/msg_gen/generated
+../src/RYDS/srv/_CompareHisto.py: /home/dave/git/hrl/hrl_srvs/srv_gen/generated
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dave/git/hrl-summer-2014/RYDS/build/CMakeFiles $(CMAKE_PROGRESS_4)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/RYDS/srv/_CompareHisto.py"
-	/opt/ros/fuerte/share/rospy/rosbuild/scripts/gensrv_py.py --noinitpy /home/mrich7/fuerte_workspace/RYDS/srv/CompareHisto.srv
+	/opt/ros/fuerte/share/rospy/rosbuild/scripts/gensrv_py.py --noinitpy /home/dave/git/hrl-summer-2014/RYDS/srv/CompareHisto.srv
 
 ROSBUILD_gensrv_py: CMakeFiles/ROSBUILD_gensrv_py
 ROSBUILD_gensrv_py: ../src/RYDS/srv/__init__.py
@@ -125,6 +197,6 @@ CMakeFiles/ROSBUILD_gensrv_py.dir/clean:
 .PHONY : CMakeFiles/ROSBUILD_gensrv_py.dir/clean
 
 CMakeFiles/ROSBUILD_gensrv_py.dir/depend:
-	cd /home/mrich7/fuerte_workspace/RYDS/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/mrich7/fuerte_workspace/RYDS /home/mrich7/fuerte_workspace/RYDS /home/mrich7/fuerte_workspace/RYDS/build /home/mrich7/fuerte_workspace/RYDS/build /home/mrich7/fuerte_workspace/RYDS/build/CMakeFiles/ROSBUILD_gensrv_py.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/dave/git/hrl-summer-2014/RYDS/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/dave/git/hrl-summer-2014/RYDS /home/dave/git/hrl-summer-2014/RYDS /home/dave/git/hrl-summer-2014/RYDS/build /home/dave/git/hrl-summer-2014/RYDS/build /home/dave/git/hrl-summer-2014/RYDS/build/CMakeFiles/ROSBUILD_gensrv_py.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/ROSBUILD_gensrv_py.dir/depend
 

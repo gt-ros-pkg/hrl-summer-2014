@@ -1,4 +1,4 @@
-# Install script for directory: /home/mrich7/fuerte_workspace/RYDS
+# Install script for directory: /home/dave/git/hrl-summer-2014/RYDS
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -38,7 +38,7 @@ ELSE(CMAKE_INSTALL_COMPONENT)
   SET(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
 ENDIF(CMAKE_INSTALL_COMPONENT)
 
-FILE(WRITE "/home/mrich7/fuerte_workspace/RYDS/build/${CMAKE_INSTALL_MANIFEST}" "")
+FILE(WRITE "/home/dave/git/hrl-summer-2014/RYDS/build/${CMAKE_INSTALL_MANIFEST}" "")
 FOREACH(file ${CMAKE_INSTALL_MANIFEST_FILES})
-  FILE(APPEND "/home/mrich7/fuerte_workspace/RYDS/build/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
+  FILE(APPEND "/home/dave/git/hrl-summer-2014/RYDS/build/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
 ENDFOREACH(file)

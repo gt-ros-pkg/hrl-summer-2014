@@ -34,6 +34,7 @@ class Investigator:
 
         while (not rospy.is_shutdown()):
             satisfaction = 0
+            # This is not a good way. It should be replaced!!! - daehyung
 	    summer = self.torque_response + self.force_response + self.accel_response
 	    puppy.publish(summer)
             if (summer > self.sensitivity):
@@ -42,6 +43,7 @@ class Investigator:
                 k = k + 1
                 if k > 5: # Require 20 hits in a row to trigger alarm
                     print "Anomaly Detected!"
+                    print "Torque: ", self.torque_response, " Force: ", self.force_response, " Acc: ", self.accel_response
                     overwatch.publish("STOP")
                     overwatch.publish("STOP")
                     overwatch.publish("STOP")

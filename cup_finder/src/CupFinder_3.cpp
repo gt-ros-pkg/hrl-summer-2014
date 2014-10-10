@@ -117,6 +117,7 @@ namespace cup_finder {
 
                 std::cerr << "Action order received. Finding the bowl." <<std::endl;
 		working = true;
+        cup_found = false;
 		if (cup_est){
 			pt3d_pub.publish(cupLoc);
 /*			if(cup_found) {
@@ -323,12 +324,12 @@ namespace cup_finder {
 //        pcl::PointCloud<pcl::PointXYZRGB>::Ptr cur_pc_sample_box (new pcl::PointCloud<pcl::PointXYZRGB>);
     	pcl::PointCloud<pcl::PointXYZRGB>::Ptr filter_pc (new pcl::PointCloud<pcl::PointXYZRGB>);
 	pcl::ConditionAnd<pcl::PointXYZRGB>::Ptr sample_box (new pcl::ConditionAnd<pcl::PointXYZRGB> ());
-    	sample_box->addComparison (pcl::FieldComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::FieldComparison<pcl::PointXYZRGB> ("x", pcl::ComparisonOps::GT, centerX-0.50)));
-    	sample_box->addComparison (pcl::FieldComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::FieldComparison<pcl::PointXYZRGB> ("x", pcl::ComparisonOps::LT, centerX+0.50)));
-    	sample_box->addComparison (pcl::FieldComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::FieldComparison<pcl::PointXYZRGB> ("y", pcl::ComparisonOps::GT, centerY-0.50)));
-    	sample_box->addComparison (pcl::FieldComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::FieldComparison<pcl::PointXYZRGB> ("y", pcl::ComparisonOps::LT, centerY+0.50)));
-    	sample_box->addComparison (pcl::FieldComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::FieldComparison<pcl::PointXYZRGB> ("z", pcl::ComparisonOps::GT, centerZ-0.50)));
-    	sample_box->addComparison (pcl::FieldComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::FieldComparison<pcl::PointXYZRGB> ("z", pcl::ComparisonOps::LT, centerZ+0.50)));
+    	sample_box->addComparison (pcl::FieldComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::FieldComparison<pcl::PointXYZRGB> ("x", pcl::ComparisonOps::GT, centerX-0.20)));
+    	sample_box->addComparison (pcl::FieldComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::FieldComparison<pcl::PointXYZRGB> ("x", pcl::ComparisonOps::LT, centerX+0.20)));
+    	sample_box->addComparison (pcl::FieldComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::FieldComparison<pcl::PointXYZRGB> ("y", pcl::ComparisonOps::GT, centerY-0.20)));
+    	sample_box->addComparison (pcl::FieldComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::FieldComparison<pcl::PointXYZRGB> ("y", pcl::ComparisonOps::LT, centerY+0.20)));
+    	sample_box->addComparison (pcl::FieldComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::FieldComparison<pcl::PointXYZRGB> ("z", pcl::ComparisonOps::GT, centerZ-0.20)));
+    	sample_box->addComparison (pcl::FieldComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::FieldComparison<pcl::PointXYZRGB> ("z", pcl::ComparisonOps::LT, centerZ+0.20)));
 //    	sample_box->addComparison (pcl::PackedRGBComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::PackedRGBComparison<pcl::PointXYZRGB> ("r", pcl::ComparisonOps::LT, 130)));
 //    	sample_box->addComparison (pcl::PackedRGBComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::PackedRGBComparison<pcl::PointXYZRGB> ("g", pcl::ComparisonOps::LT, 130)));
 //    	sample_box->addComparison (pcl::PackedRGBComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::PackedRGBComparison<pcl::PointXYZRGB> ("b", pcl::ComparisonOps::GT, 150)));
@@ -429,9 +430,9 @@ namespace cup_finder {
     	pcl::ConditionAnd<pcl::PointXYZRGB>::Ptr sample_box2 (new pcl::ConditionAnd<pcl::PointXYZRGB> ());
     	sample_box2->addComparison (pcl::FieldComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::FieldComparison<pcl::PointXYZRGB> ("z", pcl::ComparisonOps::GT, tableZ+0.01)));
     	sample_box2->addComparison (pcl::FieldComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::FieldComparison<pcl::PointXYZRGB> ("z", pcl::ComparisonOps::LT, tableZ+0.15)));
-    	sample_box2->addComparison (pcl::PackedRGBComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::PackedRGBComparison<pcl::PointXYZRGB> ("r", pcl::ComparisonOps::LT, 130)));
-    	sample_box2->addComparison (pcl::PackedRGBComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::PackedRGBComparison<pcl::PointXYZRGB> ("g", pcl::ComparisonOps::LT, 130)));
-    	sample_box2->addComparison (pcl::PackedRGBComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::PackedRGBComparison<pcl::PointXYZRGB> ("b", pcl::ComparisonOps::GT, 150)));
+    	sample_box2->addComparison (pcl::PackedRGBComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::PackedRGBComparison<pcl::PointXYZRGB> ("r", pcl::ComparisonOps::LT, 140)));
+    	sample_box2->addComparison (pcl::PackedRGBComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::PackedRGBComparison<pcl::PointXYZRGB> ("g", pcl::ComparisonOps::LT, 140)));
+    	sample_box2->addComparison (pcl::PackedRGBComparison<pcl::PointXYZRGB>::ConstPtr (new pcl::PackedRGBComparison<pcl::PointXYZRGB> ("b", pcl::ComparisonOps::GT, 140)));
 
     	// build the filter
     	pcl::ConditionalRemoval<pcl::PointXYZRGB> sample_box_rem2 (sample_box2);
@@ -458,12 +459,12 @@ namespace cup_finder {
 				numberS = numberS+1;
 			}
 		}
-	//std::cerr << "numberS is  : " << numberS << std::endl;
-
-	float cupPointZ = tableZ + 0.03;
+	
+	float cupPointZ = tableZ;
 	float cupPointX = dataX/numberS;
 	float cupPointY = dataY/numberS;
 	
+
 
 	//Publishing it as topic/.
 	//TODO fix to parameter?
@@ -477,7 +478,10 @@ namespace cup_finder {
         cupLoc.pose.orientation.z = 0;
         cupLoc.pose.orientation.w = 1;
         pt3d_pub.publish(cupLoc);
-	cup_est = true;
+    std::cerr << "Cup Location published. It is..  : (" << cupPointX << ", " << cupPointY << ", " << cupPointZ<< ")" << std::endl;
+
+
+	    cup_est = true;
 
         return true;
     }
