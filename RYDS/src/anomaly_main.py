@@ -43,7 +43,7 @@ class Investigator:
                 k = k + 1
                 if k > 5: # Require 20 hits in a row to trigger alarm
                     print "Anomaly Detected!"
-                    print "Torque: ", self.torque_response, " Force: ", self.force_response, " Acc: ", self.accel_response
+                    print "Total: ", summer," Torque: ", self.torque_response, " Force: ", self.force_response, " Acc: ", self.accel_response
                     overwatch.publish("STOP")
                     overwatch.publish("STOP")
                     overwatch.publish("STOP")
@@ -56,17 +56,17 @@ class Investigator:
             rospy.sleep(0.05) # added buffer delay (may need to adjust)
     
     def Force(self,data):
-        print "Force result Recieved"
+        #print "Force result Recieved"
         self.force_response = data.data
 
 
     def Accel(self,data):
-        print "Accelerometer result Recieved"
+        #print "Accelerometer result Recieved"
         self.accel_response = data.data
 
     
     def Torque(self,data):
-        print "Torque result Recieved"
+        #print "Torque result Recieved"
         self.torque_response = data.data
 
 

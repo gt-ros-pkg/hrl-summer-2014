@@ -229,7 +229,7 @@ class transformer():
         elif position == "Part7":
             self.broadcaster.sendTransform((0.5309877259429142, 0.4976163448816489, 0.16719537682372823),(0.7765742993649133, -0.37100605554316285, -0.27784851903166524, 0.42671660945891),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            print "Broadcast transform for Pos7"
+            print "Broadcast transform for Pos7" #
         #going to in front of subjects face:
         elif position == "Part8":
             self.broadcaster.sendTransform((0.2741387011303321, 0.05522571699560719, -0.011919598309888757),(-0.023580897114171894, 0.7483633417869068, 0.662774596931439, 0.011228696415565394),
