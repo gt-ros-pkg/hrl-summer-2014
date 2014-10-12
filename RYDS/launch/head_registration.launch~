@@ -1,7 +1,7 @@
 <launch>
-    <arg name="subject" default="dummy_1" />
-    <arg name="data_pkg" value="/home/mrich7/fuerte_workspace/RYDS/bag" />
-    <arg name="head_pcs_dir" default="$(arg data_pkg)/head_point_clouds" />
+    <arg name="subject" default="henry_1" />
+    <arg name="data_pkg" value="$(find RYDS)/bag" />
+    <arg name="head_pcs_dir" default="$(arg data_pkg)" />
     <arg name="kinect_points" default="/head_mount_kinect/depth_registered/points" />
     <arg name="kinect_camera" default="/head_mount_kinect/rgb/image_color" />
 
@@ -42,7 +42,11 @@
 	<param name="face_side1" value="l" />
     </node>
 
-    <node pkg="hrl_head_registration" name="head_alignment_confirm" type="head_alignment_confirm"
+    <!--node pkg="hrl_head_registration" name="head_alignment_confirm" type="head_alignment_confirm"
+          output="screen" respawn="True" >
+        <remap from="/kinect_camera" to="$(arg kinect_camera)" />
+    </node-->
+    <node pkg="hrl_head_registration" name="head_bowl_alignment_confirm" type="head_bowl_alignment_confirm"
           output="screen" respawn="True" >
         <remap from="/kinect_camera" to="$(arg kinect_camera)" />
     </node>

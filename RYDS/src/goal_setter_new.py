@@ -80,6 +80,16 @@ class transformer():
 
         self.init_arm_service = rospy.Service('/feeding/init_arms', None_Bool, self.initArmsCallback)
         print "Init comms complete"
+
+        rospy.sleep(2.0)
+        l_joint_state = [1.7013504719569787, -0.2846619162464899, 1.0247881430005377, -1.0400059974175215, 0.7408476425758285, -0.9261340129014745, -0.8541080908968821]
+        r_joint_state = [-1.3805018627854437, -0.3065720013305438, -0.6643104933210333, -1.6377642647201074, -0.014866701346294675, -0.9982517431192833, 2.579269529149009]
+
+        print "Initializing both arm configurations!!"
+        self.setPostureGoal(l_joint_state, arm='l')
+        self.setPostureGoal(r_joint_state, arm='r')
+        rospy.sleep(10.0)
+        
         
     def initArmsCallback(self, req):
 
@@ -90,7 +100,7 @@ class transformer():
         self.setPostureGoal(l_joint_state, arm='l')
         self.setPostureGoal(r_joint_state, arm='r')
 
-        rospy.sleep(10.0)
+        rospy.sleep(1.0)
         return None_BoolResponse(True)
         
         
@@ -278,7 +288,7 @@ class transformer():
             hdr = std_msgs.msg.Header()
             hdr.frame_id = '/torso_lift_link'
             hdr.stamp = rospy.Time.now()
-            hdr.seq = self.i
+            #hdr.seq = self.i
             transa = geometry_msgs.msg.Point()
             transa.x = trans[0]
             transa.y = trans[1]
@@ -307,7 +317,7 @@ class transformer():
             hdr = std_msgs.msg.Header()
             hdr.frame_id = '/torso_lift_link'
             hdr.stamp = rospy.Time.now()
-            hdr.seq = self.i
+            #hdr.seq = self.i
             transa = geometry_msgs.msg.Point()
             transa.x = trans[0]
             transa.y = trans[1]

@@ -51,16 +51,16 @@ class Master_Control():
         rospy.wait_for_service('haptic_mpc/enable_mpc')
         rospy.wait_for_service('right/haptic_mpc/enable_mpc')
         self.haptic = rospy.ServiceProxy('haptic_mpc/enable_mpc', EnableHapticMPC)
-        self.haptic('False')
+        #self.haptic('False')
         self.r_haptic = rospy.ServiceProxy('right/haptic_mpc/enable_mpc', EnableHapticMPC)
-        self.r_haptic('False')
+        #self.r_haptic('False')
         rospy.wait_for_service('compare_histo')
         rospy.wait_for_service('snap_node')
         print "compare_histo and snap_node and haptic mpc found"
         self.pic = rospy.ServiceProxy('snap_node', CompareHisto)        
-        self.haptic('False')
+        #self.haptic('False')
 
-        ## self.init_arm = rospy.Publisher('feeding/init_arms', Bool)
+        
         rospy.wait_for_service("/feeding/init_arms")
         self.init_arms = rospy.ServiceProxy("/feeding/init_arms", None_Bool)
         
@@ -204,8 +204,8 @@ class Master_Control():
         self.move_to_pic('/head_frame')
         #raw_input("Press enter when ready to begin")
           
-        self.haptic('Enabled')
-        self.r_haptic('Enabled')        
+        self.haptic('enabled')
+        self.r_haptic('enabled')        
         ret = self.init_arms()        
 
         self.part = 0
