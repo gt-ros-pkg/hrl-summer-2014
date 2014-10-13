@@ -31,6 +31,7 @@ class SingleSubscription(object):
         self.done = False
         self.trigger = value.C
         self.path = os.path.abspath(dest_path)       
+        print self.path
         self.subscriber = rospy.Subscriber(rospath, CompressedImage, self.callback)
 
     def callback(self, ros_msg):  

@@ -211,7 +211,7 @@ class Master_Control():
         self.part = 0
         while not rospy.is_shutdown() and self.globev_emergency != "STOP":
             #if the task is over ask if the subject would like to continue or stop
-            if self.part > 11 or self.part < 0:
+            if self.part > 12 or self.part < 0:
                 #self.send.publish("STOP")
                 print ('Continue?')
                 self.continue_message.publish('Continue?')
@@ -224,7 +224,7 @@ class Master_Control():
 
                 self.part=0
                 break
-            elif self.part == 12:
+            elif self.part == 13:
                 break
 
             #send part of task to the goal setter
@@ -234,18 +234,25 @@ class Master_Control():
              
             #move head to look at spoon and take picture
             if self.part == 0:
+                rospy.sleep(3)
+                print "part 0 : take picture!!!"
                 self.move_to_pic('/l_gripper_spoon_frame')
                 self.take_pic()
+                ## rospy.sleep(20)
+
             #take another picture and compare the two
             if self.part == 7:
                 self.task_control("Part%s" %str(self.part))
+                print "take picture!!!"
                 test = self.compare_pic()
+                ## rospy.sleep(20)
+
                 if test == False:
                     ret = self.init_arms()
                     self.part = 0
             #pause between parts 10 and 11
             if self.part == 10:
-                rospy.sleep(3)
+                rospy.sleep(10)
 
             
             self.part = self.part + 1

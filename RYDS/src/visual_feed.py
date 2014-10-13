@@ -37,7 +37,9 @@ class ActiveSubscription(object):
             f.write(ros_msg.data)
         img = cv2.imread('./data.jpeg')
         mask = np.zeros(img.shape[:2], np.uint8)
-        mask[300:375,250:350] = 255 # Change this value to match mask
+        ## mask[300:375,250:350] = 255 # Change this value to match mask
+        mask[300:400,180:300] = 255 # Change this value to match mask
+
         img_masked = cv2.bitwise_and(img,img,mask = mask)
         img_b = cv2.Canny(img,100,200)
         cv2.imshow('ActiveFeed',img_masked) 

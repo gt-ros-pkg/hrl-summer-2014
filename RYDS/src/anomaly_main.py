@@ -24,7 +24,7 @@ class Investigator:
         self.force_response = 0
         self.torque_response = 0
         self.accel_response = 0
-        self.sensitivity = 16.50 # Adjustable sensitivity. 0% -> 300% (adjusted at 265 based on test data)
+        self.sensitivity = 25 #16.50 # Adjustable sensitivity. 0% -> 300% (adjusted at 265 based on test data)
         print "Anomaly Detection Node: Online"
         rospy.Subscriber('Force_result', Float64, self.Force)
         rospy.Subscriber('Accel_result', Float64, self.Accel)

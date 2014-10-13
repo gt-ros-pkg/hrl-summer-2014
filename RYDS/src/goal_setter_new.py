@@ -100,7 +100,7 @@ class transformer():
         self.setPostureGoal(l_joint_state, arm='l')
         self.setPostureGoal(r_joint_state, arm='r')
 
-        rospy.sleep(1.0)
+        rospy.sleep(5.0)
         return None_BoolResponse(True)
         
         
@@ -180,14 +180,21 @@ class transformer():
 
         self.setOrientControl("l")
         self.setOrientControl("r")
+
+        x_offset = -0.04
+        y_offset = 0.0
+        #z_offset = -0.01
             
         #going to home location in front of camera:
         if position == "Part0":
                 
+            ## self.broadcaster.sendTransform((0.5309877259429142, 0.4976163448816489, 0.16719537682372823),(0.740, 0.052, -0.100, 0.663),
+            ##                                rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             self.broadcaster.sendTransform((0.5309877259429142, 0.4976163448816489, 0.16719537682372823),(0.740, 0.052, -0.100, 0.663),
                                            rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos0"
 
+            
             self.r_broadcaster.sendTransform((0.425, -0.480, 0.236),(0.021, -0.011, 0.158, 0.987),
                             rospy.Time.now(),"/r_GoalPos", "/torso_lift_link")
             print "Broadcast transforms for Pos0R"
@@ -195,42 +202,42 @@ class transformer():
 
         #moving vertically to over bowl:
         elif position == "Part1":
-            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], self.bowl_pos[2]+0.2),(0.740, 0.052, -0.100, 0.663),
+            self.broadcaster.sendTransform((self.bowl_pos[0]+x_offset, self.bowl_pos[1], self.bowl_pos[2]+0.2),(0.740, 0.052, -0.100, 0.663),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.516341299985487, 0.8915608293219441, 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos1"
         #dipping at an angle over the bowl:
         elif position == "Part2":
-            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], self.bowl_pos[2]+0.2),(0.601, 0.397, -0.412, 0.558),
+            self.broadcaster.sendTransform((self.bowl_pos[0]+x_offset, self.bowl_pos[1], self.bowl_pos[2]+0.2),(0.601, 0.397, -0.412, 0.558),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.5193456827844327, 0.900079836777675, -0.019204479089017762),(0.4954470843513707, 0.5023693425664104, -0.12672521702586453, 0.6972072501250012),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos2"
         #going to the base of the bowl:
         elif position == "Part3":
-            self.broadcaster.sendTransform((self.bowl_pos[0]-0.02, self.bowl_pos[1], self.bowl_pos[2]+0.05),(0.601, 0.397, -0.412, 0.558),
+            self.broadcaster.sendTransform((self.bowl_pos[0]-0.02+x_offset, self.bowl_pos[1], self.bowl_pos[2]+0.01),(0.601, 0.397, -0.412, 0.558),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.5098543997629579, 0.8806008953235813, -0.0974591835731535),(0.45253993336907683, 0.533997128372586, -0.17283744712356874, 0.6929515801756649),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos3"
         #going to other end of the bowl in a scooping motion:
         elif position == "Part4":
-            self.broadcaster.sendTransform((self.bowl_pos[0]+0.02, self.bowl_pos[1], self.bowl_pos[2]+0.04),(0.700, 0.201, -0.229, 0.646),
+            self.broadcaster.sendTransform((self.bowl_pos[0]+0.03+x_offset, self.bowl_pos[1], self.bowl_pos[2]-0.03),(0.700, 0.201, -0.229, 0.646),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.5418855469129493, 0.9140635229546514, -0.10433053967271771),(0.4903488201115364, 0.49639824283005096, -0.1400581861447639, 0.7025172763884889),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos4"
         #going to the lip of the bowl in order to wipe of excess yogurt:
         elif position == "Part5":
-            self.broadcaster.sendTransform((self.bowl_pos[0]+0.02, self.bowl_pos[1], self.bowl_pos[2]+0.2),(0.740, 0.052, -0.100, 0.663),
+            self.broadcaster.sendTransform((self.bowl_pos[0]+0.0+x_offset, self.bowl_pos[1], self.bowl_pos[2]+0.2),(0.740, 0.052, -0.100, 0.663),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.5097778641738854, 0.8811538278444637, -0.07757980710747647),(0.3515887722286045, 0.6131005055762095, -0.07870017707244904, 0.7030642839980877),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             print "Broadcast transform for Pos5"
         #going back to above bowl:
         elif position == "Part6":
-            self.broadcaster.sendTransform((self.bowl_pos[0], self.bowl_pos[1], self.bowl_pos[2]+0.2),(0.740, 0.052, -0.100, 0.663),
+            self.broadcaster.sendTransform((self.bowl_pos[0]+x_offset, self.bowl_pos[1], self.bowl_pos[2]+0.2),(0.740, 0.052, -0.100, 0.663),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.516341299985487, 0.8915608293219441, 0.1950343868326016),(0.6567058177198967, 0.16434420640210323, 0.0942917725129517, 0.7299571990406495),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
@@ -242,12 +249,12 @@ class transformer():
             print "Broadcast transform for Pos7" #
         #going to in front of subjects face:
         elif position == "Part8":
-            self.broadcaster.sendTransform((0.2741387011303321, 0.05522571699560719, -0.011919598309888757),(-0.023580897114171894, 0.7483633417869068, 0.662774596931439, 0.011228696415565394),
+            self.broadcaster.sendTransform((0.2741387011303321, 0.05522571699560719, -0.011919598309888757+0.03),(-0.023580897114171894, 0.7483633417869068, 0.662774596931439, 0.011228696415565394),
                             rospy.Time.now(),"/GoalPos", "/head_frame")
             print "Broadcast transform for Pos8"
         #going to subjects mouth:
         elif position == "Part9":
-            self.broadcaster.sendTransform((0.12608632401364894-0.03, 0.03540318703608347, 0.00607600258150498),(-0.015224467044577382, 0.7345761465214938, 0.6783020152473445, -0.008513323454022942),
+            self.broadcaster.sendTransform((0.12608632401364894-0.15, 0.03540318703608347, 0.00607600258150498),(-0.015224467044577382, 0.7345761465214938, 0.6783020152473445, -0.008513323454022942),
                             rospy.Time.now(),"/GoalPos", "/head_frame")
             print "Broadcast transform for Pos9"
         #going to eye level but at an angle so as to encourage swallowing through tongue depression:
@@ -257,23 +264,34 @@ class transformer():
             print "Broadcast transform for Pos10"
 
             #rospy.sleep(1)
-            self.r_broadcaster.sendTransform((0.12608632401364894+0.05, 0.03540318703608347, 0.00607600258150498),(-0.015224467044577382, 0.7345761465214938, 0.6783020152473445, -0.008513323454022942),
+            self.r_broadcaster.sendTransform((0.12608632401364894-0.085, 0.03540318703608347, 0.00607600258150498),(-0.015224467044577382, 0.7345761465214938, 0.6783020152473445, -0.008513323454022942),
                             rospy.Time.now()+rospy.Duration(1),"/r_GoalPos", "/head_frame")
             print "Broadcast transforms for Pos10R"
 
 
-        #going back to home poistion:
+        #going to eye level but at an angle so as to encourage swallowing through tongue depression:
         elif position == "Part11":
+            self.broadcaster.sendTransform((0.2826437596817016, 0.03715712909254376, 0.0136172136416570133),(-0.050599231123428158, 0.7586479615613725, 0.6342031296736002, 0.0013829359935748063),
+                            rospy.Time.now(),"/GoalPos", "/head_frame")
+            print "Broadcast transform for Pos11"
+
+            #rospy.sleep(1)
+            self.r_broadcaster.sendTransform((0.12608632401364894+0.2, 0.03540318703608347, 0.00607600258150498),(-0.015224467044577382, 0.7345761465214938, 0.6783020152473445, -0.008513323454022942),
+                            rospy.Time.now()+rospy.Duration(1),"/r_GoalPos", "/head_frame")
+            print "Broadcast transforms for Pos11R"
+            
+        #going back to home poistion:
+        elif position == "Part12":
             self.broadcaster.sendTransform((0.564, 0.797, 0.185),(0.740, 0.052, -0.100, 0.663),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
-            print "Broadcast transforms for Pos11L"
+            print "Broadcast transforms for Pos12L"
 
 
             self.r_broadcaster.sendTransform((0.425, -0.480, 0.236),(0.021, -0.011, 0.158, 0.987),
                             rospy.Time.now(),"/r_GoalPos", "/torso_lift_link")
             #self.r_broadcaster.sendTransform((0.5407266943829659, 0.02987365197085315, 0.12104661416190984),(0.8281494537699263, 0.47993966894730516, -0.18113711788590195, 0.22586664409627374),
             #                rospy.Time.now(),"/r_GoalPos", "/torso_lift_link")
-            print "Broadcast transforms for P11R"
+            print "Broadcast transforms for P12R"
 
 
 
@@ -359,7 +377,7 @@ class transformer():
         published = False
         while (not rospy.is_shutdown() and published == False):
             published = self.send_to_hmpc()
-            if position == "Part0" or position == "Part10" or position == "Part11":
+            if position == "Part0" or position == "Part10" or position == "Part12":
                 published = self.r_send_to_hmpc()
             self.rate.sleep()
 
@@ -370,7 +388,7 @@ class transformer():
         while (not rospy.is_shutdown() and self.stop != "STOP"):
 
             self.broadcast(position)
-            if position == "Part0" or position == "Part10" or position == "Part11":
+            if position == "Part0" or position == "Part10" or position == "Part12":
                 published = self.r_send_to_hmpc()
             try:
                 self.listener.waitForTransform('/l_gripper_spoon_frame', '/GoalPos', rospy.Time(0), rospy.Duration(3.0))   

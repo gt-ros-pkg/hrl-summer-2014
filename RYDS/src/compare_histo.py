@@ -23,7 +23,8 @@ def analyze_image(num):
     img = cv2.imread('./CoHis/expected.jpeg')
     b, g, r = cv2.split(img)
     mask = np.zeros(img.shape[:2], np.uint8)
-    mask[300:375,250:350] = 225 # Use visual_feed.py to view this window
+    ## mask[300:375,250:350] = 225 # Use visual_feed.py to view this window
+    mask[300:400,180:300] = 225 # Use visual_feed.py to view this window
     hist_norm_b = cv2.calcHist([b], [0], mask, [256], [0,256])
     hist_norm_g = cv2.calcHist([g], [0], mask, [256], [0,256])
     hist_norm_r = cv2.calcHist([r], [0], mask, [256], [0,256])
@@ -64,8 +65,10 @@ def analyze_image(num):
     xb = abs(norm_loc_b - current_loc_b)
     xg = abs(norm_loc_g - current_loc_g)
     xr = abs(norm_loc_r - current_loc_r)
-    print "#", xb, "#" , xg, "#", xr, "#"
-    if xb > 20 or xg > 20 or xr > 20:
+    print norm_loc_b, norm_loc_g, norm_loc_r, "-- ", current_loc_b, current_loc_g, current_loc_r 
+    #print "#", xb, "#" , xg, "#", xr, "#"
+    ## if xb > 20 or xg > 20 or xr > 20:    
+    if xb > 10 or xg > 10 or xr > 10:
      return 0
     else:
      return 1
