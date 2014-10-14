@@ -8,6 +8,8 @@ import rosbag
 from std_msgs.msg import String
 from geometry_msgs.msg import PoseStamped, Transform, Point, Quaternion
 from tf import TransformBroadcaster, TransformListener
+import numpy as np
+from hrl_lib.transforms import *
 
 from hrl_head_registration.srv import HeadRegistration, ConfirmRegistration
 from hrl_geom.pose_converter import PoseConv
@@ -95,6 +97,26 @@ class RegistrationLoader(object):
             pos = (hp_world.pose.position.x, hp_world.pose.position.y, hp_world.pose.position.z)
             quat = (hp_world.pose.orientation.x, hp_world.pose.orientation.y,
                     hp_world.pose.orientation.z, hp_world.pose.orientation.w)
+
+            #Temp: hack for feeding system
+            print "Modifying head frame into upright frame"
+            rot = np.matrix([[1 - 2*quat[1]*quat[1] - 2*quat[2]*quat[2],    2*quat[0]*quat[1] - 2*quat[2]*quat[3],      2*quat[0]*quat[2] + 2*quat[1]*quat[3]],
+                             [2*quat[0]*quat[1] + 2*quat[2]*quat[3],         1 - 2*quat[0]*quat[0] - 2*quat[2]*quat[2],  2*quat[1]*quat[2] - 2*quat[0]*quat[3]],     
+                             [2*quat[0]*quat[2] - 2*quat[1]*quat[3],         2*quat[1]*quat[2] + 2*quat[0]*quat[3],      1 - 2*quat[0]*quat[0] - 2*quat[1]*quat[1]]]) 
+            rot[0,2]=rot[1,2]=0.0
+            rot[2,2]=1.0
+            rot[2,0]=rot[2,1]=0.0
+
+            print rot.shape
+            x_norm = np.linalg.norm(rot[:,0])
+            rot[0,0] /= x_norm
+            rot[1,0] /= x_norm
+            y_norm = np.linalg.norm(rot[:,1])
+            rot[0,1] /= y_norm
+            rot[1,1] /= y_norm
+            quat = matrix_to_quaternion(rot)
+            print "Completed to modify head frame into upright frame"
+                
             self.head_frame_tf = (pos, quat)
             self.publish_feedback("Head registration confirmed.");
             return True

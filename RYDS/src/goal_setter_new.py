@@ -182,8 +182,10 @@ class transformer():
         self.setOrientControl("r")
 
         x_offset = -0.04
-        y_offset = 0.0
+        #y_offset = 0.0
         #z_offset = -0.01
+
+        x_head_offset = -0.13
             
         #going to home location in front of camera:
         if position == "Part0":
@@ -230,7 +232,7 @@ class transformer():
             print "Broadcast transform for Pos4"
         #going to the lip of the bowl in order to wipe of excess yogurt:
         elif position == "Part5":
-            self.broadcaster.sendTransform((self.bowl_pos[0]+0.0+x_offset, self.bowl_pos[1], self.bowl_pos[2]+0.2),(0.740, 0.052, -0.100, 0.663),
+            self.broadcaster.sendTransform((self.bowl_pos[0]+x_offset, self.bowl_pos[1], self.bowl_pos[2]+0.2),(0.740, 0.052, -0.100, 0.663),
                             rospy.Time.now(),"/GoalPos", "/torso_lift_link")
             # self.broadcaster.sendTransform((0.5097778641738854, 0.8811538278444637, -0.07757980710747647),(0.3515887722286045, 0.6131005055762095, -0.07870017707244904, 0.7030642839980877),
             #                 rospy.Time.now(),"/GoalPos", "/torso_lift_link")
@@ -254,17 +256,17 @@ class transformer():
             print "Broadcast transform for Pos8"
         #going to subjects mouth:
         elif position == "Part9":
-            self.broadcaster.sendTransform((0.12608632401364894-0.15, 0.03540318703608347, 0.00607600258150498),(-0.015224467044577382, 0.7345761465214938, 0.6783020152473445, -0.008513323454022942),
+            self.broadcaster.sendTransform((0.12608+x_head_offset, 0.03540, 0.00607),(-0.015224467044577382, 0.7345761465214938, 0.6783020152473445, -0.008513323454022942),
                             rospy.Time.now(),"/GoalPos", "/head_frame")
             print "Broadcast transform for Pos9"
         #going to eye level but at an angle so as to encourage swallowing through tongue depression:
         elif position == "Part10":
-            self.broadcaster.sendTransform((0.2826437596817016, 0.03715712909254376, 0.0136172136416570133),(-0.050599231123428158, 0.7586479615613725, 0.6342031296736002, 0.0013829359935748063),
+            self.broadcaster.sendTransform((0.28264, 0.03715, 0.01361),(-0.050599231123428158, 0.7586479615613725, 0.6342031296736002, 0.0013829359935748063),
                             rospy.Time.now(),"/GoalPos", "/head_frame")
             print "Broadcast transform for Pos10"
 
             #rospy.sleep(1)
-            self.r_broadcaster.sendTransform((0.12608632401364894-0.085, 0.03540318703608347, 0.00607600258150498),(-0.015224467044577382, 0.7345761465214938, 0.6783020152473445, -0.008513323454022942),
+            self.r_broadcaster.sendTransform((0.12608+x_head_offset+0.06, 0.03540, 0.00607),(-0.015224467044577382, 0.7345761465214938, 0.6783020152473445, -0.008513323454022942),
                             rospy.Time.now()+rospy.Duration(1),"/r_GoalPos", "/head_frame")
             print "Broadcast transforms for Pos10R"
 
@@ -276,7 +278,7 @@ class transformer():
             print "Broadcast transform for Pos11"
 
             #rospy.sleep(1)
-            self.r_broadcaster.sendTransform((0.12608632401364894+0.2, 0.03540318703608347, 0.00607600258150498),(-0.015224467044577382, 0.7345761465214938, 0.6783020152473445, -0.008513323454022942),
+            self.r_broadcaster.sendTransform((0.12608632401364894+0.25, 0.03540318703608347, 0.00607600258150498),(-0.015224467044577382, 0.7345761465214938, 0.6783020152473445, -0.008513323454022942),
                             rospy.Time.now()+rospy.Duration(1),"/r_GoalPos", "/head_frame")
             print "Broadcast transforms for Pos11R"
             
@@ -397,7 +399,7 @@ class transformer():
                 if (trans[1] < .03 and trans[2] < .03 and trans[0] < .03 and rot[0] < .3 and rot[1] < .3 and rot[2] < .3):
                     #check = raw_input("(r)epeat printout of transform or (c)ontinue to next task?")
                     #if check == 'c':
-                    #rospy.sleep(3)
+                    rospy.sleep(3)
                     msg = position + "Done"
                     self.task_set.publish(msg)
                     print "done"

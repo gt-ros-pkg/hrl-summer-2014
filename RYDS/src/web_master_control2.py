@@ -252,7 +252,7 @@ class Master_Control():
                     self.part = 0
             #pause between parts 10 and 11
             if self.part == 10:
-                rospy.sleep(10)
+                rospy.sleep(5)
 
             
             self.part = self.part + 1
