@@ -195,6 +195,9 @@ class Master_Control():
             got_yogurt = True
         else :
             print "Image Loaded for first time"
+
+        got_yogurt = True
+            
         return got_yogurt
 
 ###Main Function###
@@ -234,7 +237,7 @@ class Master_Control():
              
             #move head to look at spoon and take picture
             if self.part == 0:
-                rospy.sleep(3)
+                #rospy.sleep(3)
                 print "part 0 : take picture!!!"
                 self.move_to_pic('/l_gripper_spoon_frame')
                 self.take_pic()
