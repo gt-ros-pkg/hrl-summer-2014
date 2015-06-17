@@ -34,8 +34,7 @@ class Investigator:
         rospy.init_node('Anomaly_Control')
         k = 0
 
-        while (not rospy.is_shutdown()):
-            satisfaction = 0
+        while (not rospy.is_shutdown())            satisfaction = 0
             # This is not a good way. It should be replaced!!! - daehyung
 	    summer = self.torque_response + self.force_response + self.accel_response
             #print "Total: ", summer," Torque: ", self.torque_response, " Force: ", self.force_response, " Acc: ", self.accel_response

@@ -69,7 +69,7 @@ def analyze_image(num):
     #print "#", xb, "#" , xg, "#", xr, "#"
     ## if xb > 20 or xg > 20 or xr > 20:    
     ## if xb > 10 or xg > 10 or xr > 10:
-    if xb > 1 or xg > 1 or xr > 1:
+    if xb > 0 or xg > 0 or xr > 0:
      return 0
     else:
      return 1

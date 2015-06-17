@@ -34,8 +34,8 @@ class audio_core():
         self.secs=5 #number of seconds to establish background noise baseline
         self.stop=True
         self.mu=0	#mean as calculated from previous trials
-        self.sigma=170
-        self.stddevs=1	#number of standard deviations above mean to allow as a threshhold
+        self.sigma=170.
+        self.stddevs=1.1	#number of standard deviations above mean to allow as a threshhold
         self.pub1=rospy.Publisher('emergency', String)
         self.pub2=rospy.Publisher('audio_analysis', numpy_msg(Floats))
         self.raw_audio_pub=rospy.Publisher('feeding/raw_audio', Float32)        
@@ -62,11 +62,14 @@ class audio_core():
     def audio_analyzer(self, z):#, data):
         r=rospy.Rate(10) #in hz
         #Check if amplitude is above threshold
+        #print z, self.stddevs*self.sigma
+
         a=abs(z)>=self.stddevs*self.sigma
         b=a.any()
         if b:
             #Continue checking amplitude and publish stop message if anomaly occurs
             self.pub1.publish('STOP')
+            print "Audio anomaly"
         #else:
             #If no anomaly continue publishing power and frequency data
             #self.pub2.publish(data.astype(float))
@@ -78,6 +81,7 @@ class audio_core():
                 #Continue checking amplitude and publish stop message if anomaly occurs
                 self.pub1.publish('STOP')
 		print "the end is upon us"
+                print "Audio anomaly"
             #else:
                 #If no anomaly continue publishing power and frequency data
                 #self.pub2.publish(data.astype(float))
@@ -86,7 +90,7 @@ class audio_core():
         frames=deque([], 3000)
         amp_frames=deque([], 3000)
         try:
-            while self.stop:
+            while not rospy.is_shutdown() and self.stop:
                 data=self.stream.read(self.chunk)
                 decoded=np.fromstring(data, 'Float32')
                 decoded2=np.fromstring(data, 'Int16')
